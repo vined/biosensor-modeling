@@ -1,0 +1,17 @@
+**/biosensor-modeling
+**/biosensor-modeling-unittests
+
+**/*.a
+**/*.o
+
+**/~*
+**/*~
+**/*.swp
+
+
+**/.idea
+**/*.iml
+
+**/__pycache__
+
+**/*.out
