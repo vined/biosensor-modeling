@@ -3,7 +3,7 @@
 
 namespace {
 
-TEST(ExponentValuesNetGeneratorTest, GetHMax) {
+TEST(ExponentIntervalsTest, GetHMax) {
 
     EXPECT_FLOAT_EQ(0.001, get_h_max(1000));
     EXPECT_FLOAT_EQ(0.00000001, get_h_max(100000000));
