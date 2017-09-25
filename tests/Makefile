@@ -45,7 +45,7 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
 all : $(TESTS)
 
 clean :
-	rm -f $(TESTS) gtest.a gtest_main.a *.o
+	rm -f *.o $(TESTS) gtest.a gtest_main.a
 
 # Builds gtest.a and gtest_main.a.
 
@@ -75,27 +75,17 @@ gtest_main.a : gtest-all.o gtest_main.o
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-#sample1.o : $(USER_DIR)/sample1.cc $(USER_DIR)/sample1.h $(GTEST_HEADERS)
-#	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/sample1.cc
+# Tests
 
-#sample1_unittest.o : $(USER_DIR)/sample1_unittest.cc \
-#                     $(USER_DIR)/sample1.h $(GTEST_HEADERS)
-#	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/sample1_unittest.cc
+exponent-intervals.o : $(USER_DIR)/exponent-intervals.cc \
+		$(USER_DIR)/exponent-intervals.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/exponent-intervals.cc
 
-#sample1_unittest : sample1.o sample1_unittest.o gtest_main.a
-#	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+exponent-intervals-unittest.o : $(TESTS_DIR)/exponent-intervals-unittest.cc \
+		$(USER_DIR)/exponent-intervals.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TESTS_DIR)/exponent-intervals-unittest.cc
 
-# Real tests
-
-exponent-values-net-generator.o : $(USER_DIR)/exponent-values-net-generator.cc \
-		$(USER_DIR)/exponent-values-net-generator.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/exponent-values-net-generator.cc
-
-exponent-values-net-generator-unittest.o : $(TESTS_DIR)/exponent-values-net-generator-unittest.cc \
-		$(USER_DIR)/exponent-values-net-generator.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TESTS_DIR)/exponent-values-net-generator-unittest.cc
-
-biosensor-modeling-unittests : exponent-values-net-generator.o \
-		exponent-values-net-generator-unittest.o gtest_main.a
+biosensor-modeling-unittests : exponent-intervals.o \
+		exponent-intervals-unittest.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 

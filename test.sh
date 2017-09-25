@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
+echo ------------------ Building tests ------------------
 cd tests
-make && ./biosensor-modeling-unittests
+make clean
+make
+echo ------------------ Running tests -------------------
+./biosensor-modeling-unittests

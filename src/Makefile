@@ -1,12 +1,12 @@
 # Think of using separate folders
 CXXFLAGS = -std=c++11
-objects = main.o exponent-values-net-generator.o
+objects = main.o exponent-intervals.o
 
 biosensor-modeling: $(objects)
 	$(CXX) $(CXXFLAGS) $(objects) -o biosensor-modeling
 
-main.o: exponent-values-net-generator.h
-exponent-values-net-generator.o: exponent-values-net-generator.h
+main.o: exponent-intervals.h
+exponent-intervals.o: exponent-intervals.h
 
 clean:
-	-rm biosensor-modeling $(objects)
+	-rm biosensor-modeling *.o
