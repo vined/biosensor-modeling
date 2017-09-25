@@ -81,11 +81,20 @@ exponent-intervals.o : $(USER_DIR)/exponent-intervals.cc \
 		$(USER_DIR)/exponent-intervals.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/exponent-intervals.cc
 
+values-range.o : $(USER_DIR)/values-range.cc \
+		$(USER_DIR)/values-range.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/values-range.cc
+
+values-net.o : $(USER_DIR)/values-net.cc \
+		$(USER_DIR)/values-net.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/values-net.cc
+
 exponent-intervals-unittest.o : $(TESTS_DIR)/exponent-intervals-unittest.cc \
-		$(USER_DIR)/exponent-intervals.h $(GTEST_HEADERS)
+		$(USER_DIR)/exponent-intervals.h $(USER_DIR)/values-range.h $(USER_DIR)/values-net.h \
+		$(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TESTS_DIR)/exponent-intervals-unittest.cc
 
-biosensor-modeling-unittests : exponent-intervals.o \
+biosensor-modeling-unittests : exponent-intervals.o values-range.o values-net.o \
 		exponent-intervals-unittest.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 

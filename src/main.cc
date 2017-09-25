@@ -15,7 +15,7 @@ int main() {
     // Test _get_N
 
     int N_b = 10000;
-    double h_max = get_h_max(N_b);
+    double h_max = get_user_h_max(N_b);
     double q = get_q(N_b);
     cout << "When N_b is 10000, N should be 92110, N actually is: " << get_N(q, h_max) << endl;
 
