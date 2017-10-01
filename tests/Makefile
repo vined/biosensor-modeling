@@ -14,10 +14,9 @@
 
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
-GTEST_DIR = ./googletest
+GTEST_DIR = ../../googletest/googletest
 
 # Where to find user code.
-#USER_DIR = ./googletest/samples
 USER_DIR = ../src
 
 # Where to find tests code.
@@ -30,6 +29,7 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 
 # Flags passed to the C++ compiler.
 CXXFLAGS += -g -Wall -Wextra -pthread
+CXXFLAGS += -std=c++11
 
 # All tests produced by this Makefile. Remember to add new tests you
 # created to the list.

@@ -1,4 +1,4 @@
-# Think of using separate folders
+
 CXXFLAGS = -std=c++11
 objects = main.o exponent-intervals.o values-range.o values-net.o
 
