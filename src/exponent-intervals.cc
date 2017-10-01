@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#define MAX_N_ITERATIONS 20
+#define MAX_N_ITERATIONS 200
 
 // Private
 double _get_first_q_approx(double h_max) {
@@ -41,8 +41,8 @@ double get_q(int N_b, double h_max) {
     while (N != N_approx) {
 
         if (i > MAX_N_ITERATIONS) {
-            // Too many iterations
-            throw 10;
+            // Todo: create exceptions: Too many iterations
+            throw 100;
         }
 
         N = N_approx;

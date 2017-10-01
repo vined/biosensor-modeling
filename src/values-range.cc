@@ -4,17 +4,6 @@
 
 using namespace std;
 
-/*
-Todo: test the following conditions
-h[0] <= (h[n-1])^2
-h[0] << h[n-1] << 1
-h[n-1]=h_max
-sum(h)=1
-
-h[0]=(q-1)/(q^n-1)
-
-h_max <= 1/N_b
-*/
 
 double get_I_length(double d_e, double d_m) {
     return fmin(d_e, d_m) / 2.0;
@@ -36,7 +25,7 @@ int get_N_theta(double d_e, double d_m, int N_b) {
     return ceil( 2 * N_b * get_theta_I_half_count(d_e, d_m) );
 }
 
-int get_h_max(double d_e, double d_m, int N_b) {
+double get_h_max(double d_e, double d_m, int N_b) {
 
     double N_theta = get_N_theta(d_e, d_m, N_b);
 
