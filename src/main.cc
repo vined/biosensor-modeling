@@ -1,8 +1,10 @@
 #include <iostream>
+#include <vector>
+
+#include "values-net.h"
 
 using namespace std;
 
-#include "values-net.h"
 
 int main() {
 
@@ -11,7 +13,11 @@ int main() {
     cout << "Size of long int : " << sizeof(long int) << endl;
     cout << "Size of double : " << sizeof(double) << endl;
 
-    cout << generateNonLinearValuesNet(4, 5, 100).size() << endl;
+    vector<double> net = generateNonLinearValuesNet(4, 5, 100);
+    cout << net.size() << endl;
+
+    for (double val : net)
+        cout << val << endl;
 
     return 0;
 }

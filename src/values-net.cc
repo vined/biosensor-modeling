@@ -93,7 +93,7 @@ vector<double> generateNonLinearValuesNet(double d_e, double d_m, int N_b) {
         getNonLinearValuesNetParams(d_e, d_m, N_b);
     vector<double> steps = _get_steps(d_e, d_m, params);
 
-    int x = 0;
+    double x = 0;
     vector<double> values_net;
     values_net.push_back(x);
 
