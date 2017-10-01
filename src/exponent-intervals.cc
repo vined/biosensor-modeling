@@ -32,7 +32,7 @@ int get_N(double q, double h_max) {
     return ceil( (log(1 + (q-1)/pow(h_max,2))) / log(q));
 }
 
-double get_q(int N_b, double h_max) {
+double get_q(double h_max) {
 
     double q = _get_first_q_approx(h_max);
     int N = 0, i = 0;
