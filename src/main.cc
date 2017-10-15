@@ -3,30 +3,28 @@
 
 #include "values-net.h"
 #include "machine-precision.h"
+#include "time-intervals.h"
 
 using namespace std;
 
-void printVector(vector<double>);
+void printVector(vector<double>, int max);
 
 int main() {
 
-    cout.precision(15);
-    cout << "Size of int : " << sizeof(int) << endl;
-    cout << "Size of long int : " << sizeof(long int) << endl;
+    int mp = getMachinePrecision();
+    cout.precision(mp-1);
+    cout << "Machine precision : " << mp << endl;
     cout << "Size of double : " << sizeof(double) << endl;
-
-    cout << "Machine presision : " << getMachinePrecision() << endl;
 
     vector<double> net = generateNonLinearValuesNet(4, 5, 100);
     cout << net.size() << endl;
 //    printVector(net);
 
+    vector<double> time = getTimeIntervals(1000, 1000000, mp);
+    cout << time.size() << endl;
+//    printVector(time, time.size());
+
 /*
-Create values net w_t, when k(0..M)
-
-m=floor(log2 (tau/tau_min))); where tau_min is MP*100
-
-
     - Modeling -
 i - electric current
 n_e - electrons count (1 or 2)
@@ -47,7 +45,12 @@ Next - implement 5.6.4 and 5.6.5
     return 0;
 }
 
-void printVector(vector<double> vect) {
-    for (double val : vect)
+void printVector(vector<double> vect, int max) {
+    int i = 0;
+    for (double val : vect) {
+        if (i > max)
+            return;
         cout << val << endl;
+        i++;
+   }
 }

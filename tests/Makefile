@@ -96,7 +96,10 @@ gmock.a : gmock-all.o gtest-all.o
 gmock_main.a : gmock-all.o gtest-all.o gmock_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
-# Tests
+
+## Tests
+
+# exponent interval tests
 
 exponent-intervals.o : $(USER_DIR)/exponent-intervals.cc \
 		$(USER_DIR)/exponent-intervals.h $(GTEST_HEADERS)
@@ -115,7 +118,21 @@ exponent-intervals-unittest.o : $(TESTS_DIR)/exponent-intervals-unittest.cc \
 		$(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TESTS_DIR)/exponent-intervals-unittest.cc
 
-biosensor-modeling-unittests : exponent-intervals.o values-range.o values-net.o \
-		exponent-intervals-unittest.o gtest_main.a
+
+# time interval tests
+
+time-intervals.o : $(USER_DIR)/time-intervals.cc \
+		$(USER_DIR)/time-intervals.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/time-intervals.cc
+
+time-intervals-unittest.o : $(TESTS_DIR)/time-intervals-unittest.cc \
+		$(USER_DIR)/time-intervals.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TESTS_DIR)/time-intervals-unittest.cc
+
+
+# main
+
+biosensor-modeling-unittests : exponent-intervals.o values-range.o values-net.o time-intervals.o \
+		exponent-intervals-unittest.o time-intervals-unittest.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
