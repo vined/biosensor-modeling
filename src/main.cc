@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 #include "values-net.h"
@@ -7,22 +8,30 @@
 
 using namespace std;
 
-void printVector(vector<double>, int max);
+
+#define OUTPUT "../out/"
+
+void printVector(vector<double> vect, int max);
+void exportVector(string name, vector<double> vect);
 
 int main() {
 
+    // Generic system information
     int mp = getMachinePrecision();
     cout.precision(mp-1);
     cout << "Machine precision : " << mp << endl;
     cout << "Size of double : " << sizeof(double) << endl;
 
-    vector<double> net = generateNonLinearValuesNet(4, 5, 100);
-    cout << net.size() << endl;
-//    printVector(net);
+    // Creating x and t values net
+    cout << "Generating x values" << endl;
+    vector<double> x = generateNonLinearValuesNet(4, 5, 100);
+    cout << "Done, x values size: " << x.size() << endl;
+    exportVector("x", x);
 
-    vector<double> time = getTimeIntervals(1000, 1000000, mp);
-    cout << time.size() << endl;
-//    printVector(time, time.size());
+    cout << "Generating t values" << endl;
+    vector<double> t = getTimeIntervals(1000, 1000000, mp);
+    cout << "Done, t values size: " << t.size() << endl;
+    exportVector("t", t);
 
 /*
     - Modeling -
@@ -53,4 +62,23 @@ void printVector(vector<double> vect, int max) {
         cout << val << endl;
         i++;
    }
+}
+
+void exportVector(string name, vector<double> vect) {
+
+    string fileName = OUTPUT + name + ".dat";
+
+    cout << "Exporting " << fileName << "";
+
+    ofstream dat;
+    dat.open(fileName);
+
+    dat << "# " <<name << endl;
+
+    for (double val : vect) {
+        dat << val << endl;
+    }
+
+    dat.close();
+    cout << "Exporting " << fileName << " done.";
 }
