@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h>
 #include <fstream>
 #include <vector>
 
@@ -6,31 +7,116 @@
 #include "machine-precision.h"
 #include "time-intervals.h"
 
-using namespace std;
-
 
 #define OUTPUT "../out/"
+#define ARG_COUNT 6
 
-void printVector(vector<double> vect, int max);
-void exportVector(string name, vector<double> vect);
 
-int main() {
+static void show_usage()
+{
+    std::cout << "Usage: biosensor-modeling de dm Nb T M\n"
+              << "Demo mode: biosensor-modeling\n\n"
+              << "Options:\n"
+              << "\t-h\t\tShow this help message\n"
+              << "Parameters:\n"
+              << "\tde\t\tWidth of bio-sensor ferment part\n"
+              << "\tdm\t\tWidth of bio-sensor membrane part\n"
+              << "\tNb\t\tDensity of bio-sensor width values (x)\n"
+              << "\tT\t\tMaximum model time\n"
+              << "\tM\t\tTime steps count\n"
+              << std::endl;
+}
+
+struct parameters {
+    // Width of bio-sensor parts widths
+    double d_e;
+    double d_m;
+    // Width and time matrix parameters
+    int N_b;
+    int T;
+    int M;
+
+    parameters() {}
+    parameters(double _d_e, double _d_m, int _N_b, int _T, int _M) {
+        d_e = _d_e;
+        d_m = _d_m;
+        N_b = _N_b;
+        T = _T;
+        M = _M;
+    }
+
+    std::string toString() {
+        std::string str = "Parameters: ";
+        str += "d_e=" + std::to_string(d_e) + ", "
+            + "d_m=" + std::to_string(d_m) + ", "
+            + "N_b=" + std::to_string(N_b) + ", "
+            + "T=" + std::to_string(T) + ", "
+            + "M=" + std::to_string(M);
+
+        return str;
+    }
+};
+
+static parameters getDemoModeParameters() {
+    return parameters
+    (
+        4.0, // d_e
+        5.0, // d_m
+        1000, // N_b
+        1000, // T
+        1000000 // M
+    );
+}
+
+static parameters parseParameters(int argc, char* argv[]) {
+    return parameters
+    (
+        atof(argv[1]), // d_e
+        atof(argv[2]), // d_m
+        atoi(argv[3]), // N_b
+        atoi(argv[4]), // T
+        atoi(argv[5])  // M
+    );
+}
+
+static void printVector(std::vector<double> vect, int max);
+static void exportVector(std::string name, std::vector<double> vect);
+
+
+int main(int argc, char* argv[]) {
+
+    // Retrieving parameters
+    parameters params;
+
+    if (argc == 1) {
+        std::cout << "-- Demo Mode --\n"
+                  << "To see the manual run biosensor-modeling -h" << std::endl;
+        params = getDemoModeParameters();
+
+    } else if (argc == ARG_COUNT) {
+        params = parseParameters(argc, argv);
+    } else {
+        show_usage();
+        return 0;
+    }
+
+    std::cout << params.toString() << std::endl;
 
     // Generic system information
     int mp = getMachinePrecision();
-    cout.precision(mp-1);
-    cout << "Machine precision : " << mp << endl;
-    cout << "Size of double : " << sizeof(double) << endl;
+    std::cout.precision(mp-1);
+    std::cout << "Machine precision : " << mp << std::endl;
+    std::cout << "Size of double : " << sizeof(double) << std::endl;
 
     // Creating x and t values net
-    cout << "Generating x values" << endl;
-    vector<double> x = generateNonLinearValuesNet(4, 5, 100);
-    cout << "Done, x values size: " << x.size() << endl;
+    std::cout << "Generating x values" << std::endl;
+    std::vector<double> x = generateNonLinearValuesNet(params.d_e, params.d_m, params.N_b);
+    std::cout << "Done, x values size: " << x.size() << std::endl;
     exportVector("x", x);
 
-    cout << "Generating t values" << endl;
-    vector<double> t = getTimeIntervals(1000, 1000000, mp);
-    cout << "Done, t values size: " << t.size() << endl;
+    std::cout << "Generating t values" << std::endl;
+    std::vector<double> t = getTimeIntervals(params.T, params.M, mp);
+    std::cout << "Done, t values size: " << t.size() << std::endl;
     exportVector("t", t);
 
 /*
@@ -54,31 +140,31 @@ Next - implement 5.6.4 and 5.6.5
     return 0;
 }
 
-void printVector(vector<double> vect, int max) {
+static void printVector(std::vector<double> vect, int max) {
     int i = 0;
     for (double val : vect) {
         if (i > max)
             return;
-        cout << val << endl;
+        std::cout << val << std::endl;
         i++;
    }
 }
 
-void exportVector(string name, vector<double> vect) {
+static void exportVector(std::string name, std::vector<double> vect) {
 
-    string fileName = OUTPUT + name + ".dat";
+    std::string fileName = OUTPUT + name + ".dat";
 
-    cout << "Exporting " << fileName << "";
+    std::cout << "Exporting " << fileName << "";
 
-    ofstream dat;
+    std::ofstream dat;
     dat.open(fileName);
 
-    dat << "# " <<name << endl;
+    dat << "# " << name << std::endl;
 
     for (double val : vect) {
-        dat << val << endl;
+        dat << val << std::endl;
     }
 
     dat.close();
-    cout << "Exporting " << fileName << " done.";
+    std::cout << "Exporting " << fileName << " done." << std::endl;
 }

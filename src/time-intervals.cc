@@ -8,7 +8,7 @@
 using namespace std;
 
 
-vector<double> get_non_linear_interval(int m, double tau) {
+vector<double> _get_non_linear_interval(int m, double tau) {
 
     vector<double> result;
 
@@ -19,7 +19,7 @@ vector<double> get_non_linear_interval(int m, double tau) {
     return result;
 }
 
-vector<double> get_linear_interval(int M, double tau) {
+vector<double> _get_linear_interval(int M, double tau) {
 
     vector<double> result;
 
@@ -43,8 +43,8 @@ vector<double> getTimeIntervals(int T, int M, int mp) {
     int m = floor( log2( tau/tau_min ));
 
     // Interval starts with zero
-    vector<double> start = get_non_linear_interval(m, tau);
-    vector<double> end = get_linear_interval(M, tau);
+    vector<double> start = _get_non_linear_interval(m, tau);
+    vector<double> end = _get_linear_interval(M, tau);
     vector<double> result = {0.0};
 
     result.insert(result.end(), start.begin(), start.end());
