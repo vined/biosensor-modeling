@@ -79,8 +79,6 @@ static parameters parseParameters(int argc, char* argv[]) {
     );
 }
 
-void modeling(std::vector<double> x, std::vector<double> t, double delta);
-
 /*
     - Modeling -
 i - electric current

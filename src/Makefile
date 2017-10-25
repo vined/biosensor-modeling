@@ -1,6 +1,8 @@
 
 CXXFLAGS = -std=c++11
-objects = main.o exponent-intervals.o values-range.o values-net.o machine-precision.o time-intervals.o \
+objects = main.o \
+    exponent-intervals.o values-range.o values-net.o machine-precision.o time-intervals.o \
+    approximations.o \
     output-utils.o
 
 biosensor-modeling: $(objects)
@@ -13,6 +15,7 @@ values-net.o: values-net.h
 time-intervals.o: time-intervals.h
 machine-precision.o: machine-precision.h
 output-utils.o: output-utils.h
+approximations.o: approximations.h
 
 clean:
 	-rm biosensor-modeling *.o
