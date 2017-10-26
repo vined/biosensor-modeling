@@ -24,4 +24,10 @@ TEST(ApproximationsTest, GetResidualTest) {
     std::vector<double> F {99, 1, 2, -5, 99};
     EXPECT_DOUBLE_EQ(6.2, _get_residual(y, a, b, c, F));
 }
+
+TEST(ApproximationsTest, GetAllowdErrorTest) {
+
+    std::vector<double> y {1, 2, 5, 4, 3};
+    EXPECT_DOUBLE_EQ(0.0005, _get_allowed_error(y, 0.0001));
+}
 }
