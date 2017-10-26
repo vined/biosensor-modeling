@@ -18,7 +18,10 @@ TEST(ApproximationsTest, GetProgressTest) {
 TEST(ApproximationsTest, GetResidualTest) {
 
     std::vector<double> y {1, 2, 3, 4, 5};
-    std::vector<double> F {0, 1, 2, -3, 4};
-    EXPECT_DOUBLE_EQ(7, _get_residual(y, 1, 1, -1, F));
+    std::vector<double> a {99, 1, 2, 3, 99};
+    std::vector<double> b {99, 1, 2, 3, 99};
+    std::vector<double> c {99, 1, 2, -3, 99};
+    std::vector<double> F {99, 1, 2, -5, 99};
+    EXPECT_DOUBLE_EQ(6.2, _get_residual(y, a, b, c, F));
 }
 }

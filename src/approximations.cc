@@ -16,14 +16,20 @@ double _get_progress(std::vector<double> y_new, std::vector<double> y_old) {
 }
 
 // Backward error
-double _get_residual(std::vector<double> y, double a, double b, double c, std::vector<double> F) {
+double _get_residual(
+    std::vector<double> y,
+    std::vector<double> a,
+    std::vector<double> b,
+    std::vector<double> c,
+    std::vector<double> F
+) {
 
     double max_residual = 0;
     for (unsigned i = 1; i < y.size()-1; i++) {
 
-        double values [4] = {fabs(a), fabs(b), fabs(c), fabs(F[i])};
+        double values [4] = {abs(a[i]), abs(b[i]), abs(c[i]), abs(F[i])};
         double *m = std::max_element(std::begin(values), std::end(values));
-        double res = a*y[i-1] - c*y[i] + b*y[i+1] + F[i];
+        double res = a[i]*y[i-1] - c[i]*y[i] + b[i]*y[i+1] + F[i];
         double residual = abs(res) / *m;
 
         if (residual > max_residual) {
