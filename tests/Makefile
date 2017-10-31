@@ -132,20 +132,20 @@ time-intervals-unittest.o : $(TESTS_DIR)/time-intervals-unittest.cc \
 
 # approximations tests
 
-approximations.o : $(USER_DIR)/approximations.cc \
-		$(USER_DIR)/approximations.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/approximations.cc
+approximations-utils.o : $(USER_DIR)/approximations-utils.cc \
+		$(USER_DIR)/approximations-utils.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/approximations-utils.cc
 
-approximations-unittest.o : $(TESTS_DIR)/approximations-unittest.cc \
-		$(USER_DIR)/approximations.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TESTS_DIR)/approximations-unittest.cc
+approximations-utils-unittest.o : $(TESTS_DIR)/approximations-utils-unittest.cc \
+		$(USER_DIR)/approximations-utils.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TESTS_DIR)/approximations-utils-unittest.cc
 
 
 # main
 
 biosensor-modeling-unittests : exponent-intervals.o values-range.o values-net.o time-intervals.o \
 		exponent-intervals-unittest.o time-intervals-unittest.o \
-		approximations.o approximations-unittest.o \
+		approximations-utils.o approximations-utils-unittest.o \
 		gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 

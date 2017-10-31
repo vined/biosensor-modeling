@@ -1,7 +1,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-#include "../src/approximations.h"
+#include "../src/approximations-utils.h"
 
 using ::testing::ElementsAreArray;
 
@@ -29,5 +29,12 @@ TEST(ApproximationsTest, GetAllowdErrorTest) {
 
     std::vector<double> y {1, 2, 5, 4, 3};
     EXPECT_DOUBLE_EQ(0.0005, _get_allowed_error(y, 0.0001));
+}
+
+TEST(ApproximationsTest, GetMidValTest) {
+
+    std::vector<double> y {1, 2, 3, 4, 5};
+    EXPECT_DOUBLE_EQ(3.5, _get_mid_val(y, 3, false));
+    EXPECT_DOUBLE_EQ(4.5, _get_mid_val(y, 3, true));
 }
 }
