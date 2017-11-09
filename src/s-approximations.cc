@@ -102,13 +102,13 @@ std::vector<double> _get_new_approximations(
 ) {
 
     std::vector<double> y_new;
-    int N = S_k.size();
-    double S_0 = S_k[N-1];
+    int N = S_k.size()-1;
+    double S_0 = S_k[N];
 
     double y0 = _get_new_y_0(A, B, Y, S_0, q);
 
     y_new.push_back(yN);
-    for (int i = 1; i < N - 1; i++) {
+    for (int i = 1; i < N-1; i++) {
         y_new.push_back(
                 y0 * A[i] + yN * B[i] + Y[i]
         );
@@ -118,7 +118,137 @@ std::vector<double> _get_new_approximations(
     return y_new;
 }
 
-void get_next_S(
+std::vector<double> get_zero_vector(int n) {
+    std::vector<double> d(n);
+
+    for(int i=0; i < n; i++) {
+        d[i] = 0.0;
+    }
+
+    return d;
+}
+
+std::vector<double> slice(int from, int to, std::vector<double> vec) {
+    std::vector<double> v(n);
+
+    int j = 0;
+    for(int i=start; i < to; i++) {
+        v[j] = vec[i];
+        j++;
+    }
+    return v;
+}
+
+std::vector<double> _solve_tridiagonal_matrix(
+        std::vector<double> a,
+        std::vector<double> b,
+        std::vector<double> c,
+        std::vector<double> d
+) {
+    int n = b.size();
+    std::vector<double> a1 = slice(1, n, a);
+    std::vector<double> c1 = slice(0, n, a);
+    std::vector<double> b1 = slice(0, n-1, a);
+
+    int info;
+    int one = 1;
+    std::vector<double> x(d);
+
+    dgtsv_(&n, &one, &*a1.begin(), &*c1.begin(), &*b1.begin(), &*x.begin(), &n, &info);
+
+    if (info != 0) {
+        throw 200;
+    }
+
+    return x;
+}
+
+std::vector<double> _get_A(
+        std::vector<double> a,
+        std::vector<double> b,
+        std::vector<double> c
+) {
+    std::vector<double> A;
+    A.push_back(1);
+
+    std::vector<double> tmp = _solve_tridiagonal_matrix(a, b, c, get_zero_vector(b.size());
+
+    A.insert(A.back(), tmp);
+    A.push_back(0);
+    return A;
+}
+
+std::vector<double> _get_B(
+        std::vector<double> a,
+        std::vector<double> b,
+        std::vector<double> c
+) {
+    std::vector<double> A;
+    A.push_back(1);
+
+    std::vector<double> tmp = _solve_tridiagonal_matrix(a, b, c, get_zero_vector(b.size());
+
+    A.insert(A.back(), tmp);
+    A.push_back(0);
+    return A;
+}
+
+std::vector<double> _get_new_y(
+        std::vector<double> S_k,
+        std::vector<double> D_s,
+        std::vector<double> x,
+        std::vector<double> h,
+        std::vector<int> alpha,
+        std::vector<double> f,
+        double t_step,
+        double V_max,
+        double K_m,
+        double C1,
+        double q,
+        double delta
+) {
+    std::vector<double> a = _get_a(D_s, x, h);
+    std::vector<double> b = _get_b(D_s, x, h);
+    std::vector<double> c = _get_c(t_step, C1, a, b);
+    std::vector<double> F = _get_F(t_step, V_max, K_m, S_k, y_old, alpha, f);
+
+    std::vector<double> A;
+    std::vector<double> B;
+    std::vector<double> Y;
+    A.push_back(1);
+    B.push_back(0);
+    Y.push_back(0);
+
+    std::vector<double> tmp_AB = _solve_tridiagonal_matrix(a, b, c, get_zero_vector(b.size());
+    std::vector<double> tmp_Y = _solve_tridiagonal_matrix(a, b, c, F);
+
+    A.insert(A.back(), tmp_AB);
+    A.insert(B.back(), tmp_AB);
+    Y.insert(Y.back(), tmp_Y);
+    A.push_back(0);
+    B.push_back(1);
+    Y.push_back(0);
+
+    return _get_new_approximations(S_k, y_old, A, B, Y, t_step, q, delta);
+}
+
+void _get_S_k_from_half_values(
+        std::vector<double> S_k,
+        std::vector<double> y
+) {
+
+    std::vector<double> S_k_next;
+
+    for(int i = 0; i < S_k.size(); i++) {
+        S_k_next.push_back(
+                2*y[i] - S_k[i]
+        );
+    }
+
+    return S_k_next;
+}
+
+std::vector<double> _get_next_S_k(
         std::vector<double> S_k,
         std::vector<double> D_s,
         std::vector<double> x,
@@ -133,7 +263,7 @@ void get_next_S(
         double delta
 ) {
 
-    std::vector<double> y_old = S_k;
+    std::vector<double> y_old(S_k);
     std::vector<double> y_new;
     double progress = 0;
     double residual = 0;
@@ -146,15 +276,7 @@ void get_next_S(
         }
         i++;
 
-        std::vector<double> a = _get_a(D_s, x, h);
-        std::vector<double> b = _get_b(D_s, x, h);
-        std::vector<double> c = _get_c(t_step, C1, a, b);
-        std::vector<double> F = _get_F(t_step, V_max, K_m, S_k, y_old, alpha, f);
-
-        // ToDo calculate A,B,Y with lapac
-
-        y_new = _get_new_approximations(S_k, y_old, A, B, Y, t_step, q, delta);
-
+        y_new = _get_new_y(S_k, D_s, x, h, alpha, f, t_step, V_max, K_m, C1, q, delta);
         std::vector<double> F_new = _get_F(t_step, V_max, K_m, S_k, y_old, alpha, f);
 
         progress = _get_progress(y_new, y_old);
@@ -163,17 +285,17 @@ void get_next_S(
 
     } while (allowed_error > progress && allowed_error > residual);
 
-    return y_new;
+    return _get_S_k_from_half_values(S_k, y_new);
 }
 
-void approximate_s(
-        std::vector<double> S_k,
+std::vector<std::vector<double>> approximate_S(
         std::vector<double> D_s,
         std::vector<double> x,
         std::vector<double> h,
         std::vector<double> t,
         std::vector<int> alpha,
         std::vector<double> f,
+        double S_0,
         double V_max,
         double K_m,
         double C1,
@@ -181,5 +303,15 @@ void approximate_s(
         double delta
 ) {
 
-    // ToDo for t get S_i
+    std::vector<std::vector<double>> S;
+    std::vector<double> S_k = get_zero_vector(x.size()-1);
+    S_k.push_back(S_0);
+
+    for (int i = 1; i < t.size(); i++) {
+        std::vector<double> S_i = _get_next_S_k(S_k, D_s, x, h, alpha, f, t_step, V_max, K_m, C1, q, delta);
+        S.push_back(S_i);
+        S_k(S_i);
+    }
+
+    return S;
 }
