@@ -17,7 +17,7 @@ std::vector<double> _get_a(
 
     for (int i = 1; i < x.size() - 1; i++) {
         a.push_back(
-                (2 * _get_mid_val(D_s, i, false)) / (h[i - 1] * (x[i + 1] - x[i - 1]))
+                (2 * getMidVal(D_s, i, false)) / (h[i - 1] * (x[i + 1] - x[i - 1]))
         );
     }
 
@@ -33,7 +33,7 @@ std::vector<double> _get_b(
 
     for (int i = 1; i < x.size() - 1; i++) {
         b.push_back(
-                (2 * _get_mid_val(D_s, i, true)) / (h[i] * (x[i + 1] - x[i - 1]))
+                (2 * getMidVal(D_s, i, true)) / (h[i] * (x[i + 1] - x[i - 1]))
         );
     }
 
@@ -70,7 +70,7 @@ std::vector<double> _get_F(
 
     for (int i = 1; i < y.size() - 1; i++) {
         F.push_back(
-                (2 * S_k[i] / t_step) - ( (alpha[i] * V_max * y[i]) / (K_m + y[i]) ) + _get_mid_val(f, i, true)
+                (2 * S_k[i] / t_step) - ( (alpha[i] * V_max * y[i]) / (K_m + y[i]) ) + getMidVal(f, i, true)
         );
     }
 
@@ -118,27 +118,6 @@ std::vector<double> _get_new_approximations(
     return y_new;
 }
 
-std::vector<double> get_zero_vector(int n) {
-    std::vector<double> d(n);
-
-    for(int i=0; i < n; i++) {
-        d[i] = 0.0;
-    }
-
-    return d;
-}
-
-std::vector<double> slice(int from, int to, std::vector<double> vec) {
-    std::vector<double> v(n);
-
-    int j = 0;
-    for(int i=start; i < to; i++) {
-        v[j] = vec[i];
-        j++;
-    }
-    return v;
-}
-
 std::vector<double> _solve_tridiagonal_matrix(
         std::vector<double> a,
         std::vector<double> b,
@@ -147,8 +126,8 @@ std::vector<double> _solve_tridiagonal_matrix(
 ) {
     int n = b.size();
     std::vector<double> a1 = slice(1, n, a);
-    std::vector<double> c1 = slice(0, n, a);
-    std::vector<double> b1 = slice(0, n-1, a);
+    std::vector<double> c1(c);
+    std::vector<double> b1 = slice(0, n-1, b);
 
     int info;
     int one = 1;
@@ -161,36 +140,6 @@ std::vector<double> _solve_tridiagonal_matrix(
     }
 
     return x;
-}
-
-std::vector<double> _get_A(
-        std::vector<double> a,
-        std::vector<double> b,
-        std::vector<double> c
-) {
-    std::vector<double> A;
-    A.push_back(1);
-
-    std::vector<double> tmp = _solve_tridiagonal_matrix(a, b, c, get_zero_vector(b.size());
-
-    A.insert(A.back(), tmp);
-    A.push_back(0);
-    return A;
-}
-
-std::vector<double> _get_B(
-        std::vector<double> a,
-        std::vector<double> b,
-        std::vector<double> c
-) {
-    std::vector<double> A;
-    A.push_back(1);
-
-    std::vector<double> tmp = _solve_tridiagonal_matrix(a, b, c, get_zero_vector(b.size());
-
-    A.insert(A.back(), tmp);
-    A.push_back(0);
-    return A;
 }
 
 std::vector<double> _get_new_y(
@@ -219,8 +168,8 @@ std::vector<double> _get_new_y(
     B.push_back(0);
     Y.push_back(0);
 
-    std::vector<double> tmp_AB = _solve_tridiagonal_matrix(a, b, c, get_zero_vector(b.size());
-    std::vector<double> tmp_Y = _solve_tridiagonal_matrix(a, b, c, F);
+    std::vector<double> tmp_AB = _solve_tridiagonal_matrix(a, b, c, getZeroVector(b.size());
+    std::vector<double> tmp_Y = _solve_tridiagonal_matrix(a, b, c, negateVector(F));
 
     A.insert(A.back(), tmp_AB);
     A.insert(B.back(), tmp_AB);
@@ -232,6 +181,7 @@ std::vector<double> _get_new_y(
     return _get_new_approximations(S_k, y_old, A, B, Y, t_step, q, delta);
 }
 
+// Todo move to utils
 void _get_S_k_from_half_values(
         std::vector<double> S_k,
         std::vector<double> y
@@ -279,9 +229,9 @@ std::vector<double> _get_next_S_k(
         y_new = _get_new_y(S_k, D_s, x, h, alpha, f, t_step, V_max, K_m, C1, q, delta);
         std::vector<double> F_new = _get_F(t_step, V_max, K_m, S_k, y_old, alpha, f);
 
-        progress = _get_progress(y_new, y_old);
-        residual = _get_residual(y_new, a, b, c, F_new);
-        allowed_error = _get_allowed_error(y_new, delta);
+        progress = getProgress(y_new, y_old);
+        residual = getResidual(y_new, a, b, c, F_new);
+        allowed_error = getAllowedError(y_new, delta);
 
     } while (allowed_error > progress && allowed_error > residual);
 

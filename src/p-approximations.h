@@ -1,16 +1,16 @@
 #include <vector>
 
-std::vector<std::vector<double>> approximate_S(
-        std::vector<double> D_s,
+std::vector<std::vector<double>> approximate_P(
+        std::vector<double> D_p,
         std::vector<double> x,
         std::vector<double> h,
         std::vector<double> t,
         std::vector<int> alpha,
-        std::vector<double> f,
-        double S_0,
+        std::vector<double> g,
+        double P_0,
         double V_max,
         double K_m,
-        double C1,
+        double C2,
         double q,
         double delta
 );

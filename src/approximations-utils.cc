@@ -5,7 +5,7 @@
 #include "approximations-utils.h"
 
 
-double _get_progress(std::vector<double> y_new, std::vector<double> y_old) {
+double getProgress(std::vector<double> y_new, std::vector<double> y_old) {
 
     double max_diff = 0;
     for (unsigned i = 0; i < y_new.size(); i++) {
@@ -19,7 +19,7 @@ double _get_progress(std::vector<double> y_new, std::vector<double> y_old) {
 }
 
 // Backward error
-double _get_residual(
+double getResidual(
         std::vector<double> y,
         std::vector<double> a,
         std::vector<double> b,
@@ -43,12 +43,12 @@ double _get_residual(
     return max_residual;
 }
 
-double _get_allowed_error(std::vector<double> y, double delta) {
+double getAllowedError(std::vector<double> y, double delta) {
     double max = *std::max_element(y.begin(), y.end());
     return max * delta;
 }
 
-double _get_mid_val(std::vector<double> v, int i, bool up) {
+double getMidVal(std::vector<double> v, int i, bool up) {
     double v_i = v[i];
     double v_i_half;
 
@@ -60,3 +60,32 @@ double _get_mid_val(std::vector<double> v, int i, bool up) {
     return (v_i + v_i_half) / 2;
 }
 
+std::vector<double> getZeroVector(int n) {
+    std::vector<double> d(n);
+
+    for(int i = 0; i < n; i++) {
+        d[i] = 0.0;
+    }
+
+    return d;
+}
+
+std::vector<double> slice(int from, int to, std::vector<double> vec) {
+    std::vector<double> result;
+
+    for(int i = from; i <= to; i++) {
+        result.push_back(vec[i]);
+    }
+
+    return result;
+}
+
+std::vector<double> negateVector(std::vector<double> vec) {
+    std::vector<double> result;
+
+    for (double val : vec) {
+        result.push_back(-val);
+    }
+
+    return result;
+}

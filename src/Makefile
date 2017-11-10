@@ -17,6 +17,7 @@ machine-precision.o: machine-precision.h
 output-utils.o: output-utils.h
 approximations-utils.o: approximations-utils.h
 s-approximations.o: s-approximations.h
+p-approximations.o: p-approximations.h
 approximations.o: approximations.h
 
 clean:

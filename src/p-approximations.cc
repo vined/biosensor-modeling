@@ -2,25 +2,28 @@
 #include <vector>
 #include <algorithm>
 
-#include "approximations-utils.h"
-#include "s-approximations.h"
 #include "p-approximations.h"
+#include "approximations-utils.h"
 
 
-void approximate(
-        std::vector<double> D_s,
+#define MAX_ITERATIONS = 1000
+
+
+std::vector<std::vector<double>> approximate_P(
+        std::vector<double> D_p,
         std::vector<double> x,
         std::vector<double> h,
         std::vector<double> t,
         std::vector<int> alpha,
-        std::vector<double> f,
-        double S_0,
+        std::vector<double> g,
         double P_0,
         double V_max,
         double K_m,
-        double C1,
+        double C2,
         double q,
         double delta
 ) {
-
+    std::vector<std::vector<double>> P;
+    return P;
 }
+
