@@ -61,4 +61,12 @@ TEST(ApproximationsUtilsTest, NegateVector) {
     std::vector<double> z = negateVector(vec);
     EXPECT_THAT(z, testing::ElementsAreArray({-1, -2, -3, -4}));
 }
+
+TEST(ApproximationsUtilsTest, GetNextFromHalfValues) {
+
+    std::vector<double> prev {1, 2, 3, 4};
+    std::vector<double> y {1.5, 3, 3.5, 4};
+    std::vector<double> next = getNextFromHalfValues(prev, y);
+    EXPECT_THAT(next, testing::ElementsAreArray({2, 4, 4, 4}));
+}
 }

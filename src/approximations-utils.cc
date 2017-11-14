@@ -89,3 +89,18 @@ std::vector<double> negateVector(std::vector<double> vec) {
 
     return result;
 }
+
+std::vector<double> getNextFromHalfValues(
+        std::vector<double> prev,
+        std::vector<double> y
+) {
+    std::vector<double> result;
+
+    for(unsigned i = 0; i < prev.size(); i++) {
+        result.push_back(
+                2*y[i] - prev[i]
+        );
+    }
+
+    return result;
+}

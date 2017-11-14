@@ -181,23 +181,6 @@ std::vector<double> _get_new_y(
     return _get_new_approximations(S_k, y_old, A, B, Y, t_step, q, delta);
 }
 
-// Todo move to utils
-void _get_S_k_from_half_values(
-        std::vector<double> S_k,
-        std::vector<double> y
-) {
-
-    std::vector<double> S_k_next;
-
-    for(int i = 0; i < S_k.size(); i++) {
-        S_k_next.push_back(
-                2*y[i] - S_k[i]
-        );
-    }
-
-    return S_k_next;
-}
-
 std::vector<double> _get_next_S_k(
         std::vector<double> S_k,
         std::vector<double> D_s,
@@ -235,7 +218,7 @@ std::vector<double> _get_next_S_k(
 
     } while (allowed_error > progress && allowed_error > residual);
 
-    return _get_S_k_from_half_values(S_k, y_new);
+    return getNextFromHalfValues(S_k, y_new);
 }
 
 std::vector<std::vector<double>> approximate_S(
