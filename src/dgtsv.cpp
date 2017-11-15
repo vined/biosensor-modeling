@@ -3,7 +3,7 @@
 #include <vector>
 #include <math.h>
 #include <time.h>
-#include "lib/lapacke.h"
+#include lib/lapacke.h"
 
 using namespace std;
 

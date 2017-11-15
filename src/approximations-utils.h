@@ -26,3 +26,26 @@ std::vector<double> getNextFromHalfValues(
         std::vector<double> prev,
         std::vector<double> y
 );
+
+
+std::vector<double> get_a(
+        std::vector<double> D,
+        std::vector<double> x
+);
+std::vector<double> get_b(
+        std::vector<double> D,
+        std::vector<double> x
+);
+std::vector<double> get_c(
+        double t_step,
+        double C,
+        std::vector<double> a,
+        std::vector<double> b
+);
+
+std::vector<double> solveTridiagonalMatrix(
+        std::vector<double> dl,
+        std::vector<double> d,
+        std::vector<double> du,
+        std::vector<double> b
+);

@@ -2,6 +2,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "../lib/lapacke.h"
+
 #include "approximations-utils.h"
 
 
@@ -104,3 +106,81 @@ std::vector<double> getNextFromHalfValues(
 
     return result;
 }
+
+//    h[i+1] = x[i+2]-x[i+1];
+//    h[i] = x[i+1]-x[i];
+//    h[i-1] = x[i]-x[i-1];
+std::vector<double> get_a(
+        std::vector<double> D,
+        std::vector<double> x
+) {
+    std::vector<double> a;
+
+    for (unsigned i = 1; i < x.size() - 1; i++) {
+        double h = x[i]-x[i-1];
+        a.push_back(
+                (2 * getMidVal(D, i, false)) / (h * (x[i + 1] - x[i - 1]))
+        );
+    }
+
+    return a;
+}
+
+// Todo test the following
+std::vector<double> get_b(
+        std::vector<double> D,
+        std::vector<double> x
+) {
+    std::vector<double> b;
+
+    for (unsigned i = 1; i < x.size() - 1; i++) {
+        double h = x[i+1]-x[i];
+        b.push_back(
+                (2 * getMidVal(D, i, true)) / (h * (x[i + 1] - x[i - 1]))
+        );
+    }
+
+    return b;
+}
+
+std::vector<double> get_c(
+        double t_step,
+        double C,
+        std::vector<double> a,
+        std::vector<double> b
+) {
+    std::vector<double> c;
+
+    for (unsigned i = 1; i < a.size() - 1; i++) {
+        c.push_back(
+                a[i] + b[i] + (2 / t_step) + C
+        );
+    }
+
+    return c;
+}
+
+std::vector<double> solveTridiagonalMatrix(
+        std::vector<double> dl,
+        std::vector<double> d,
+        std::vector<double> du,
+        std::vector<double> b
+) {
+    int n = b.size();
+    std::vector<double> dl1 = slice(1, n, dl);
+    std::vector<double> d1(d);
+    std::vector<double> du1 = slice(0, n-1, du);
+
+    int info;
+    int one = 1;
+    std::vector<double> x(b);
+
+//    dgtsv_(&n, &one, &*dl1.begin(), &*d1.begin(), &*du1.begin(), &*x.begin(), &n, &info);
+
+    if (info != 0) {
+        throw 200;
+    }
+
+    return x;
+}
+

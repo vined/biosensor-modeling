@@ -69,4 +69,13 @@ TEST(ApproximationsUtilsTest, GetNextFromHalfValues) {
     std::vector<double> next = getNextFromHalfValues(prev, y);
     EXPECT_THAT(next, testing::ElementsAreArray({2, 4, 4, 4}));
 }
+
+TEST(ApproximationsUtilsTest, Get_a) {
+
+std::vector<double> D {0.0, 0.0, 0.0, 0.4, 0.4, 0.4};
+std::vector<double> x {0.0, 0.05, 0.1, 0.18, 0.3, 0.8};
+std::vector<double> next = get_a(D, x);
+// Todo create ElementsAreDoubleArray method with precision check
+//EXPECT_THAT(next, testing::ElementsAreArray({0.0, 0.0, 25.0, 10.752688172}));
+}
 }
