@@ -107,9 +107,6 @@ std::vector<double> getNextFromHalfValues(
     return result;
 }
 
-//    h[i+1] = x[i+2]-x[i+1];
-//    h[i] = x[i+1]-x[i];
-//    h[i-1] = x[i]-x[i-1];
 std::vector<double> get_a(
         std::vector<double> D,
         std::vector<double> x
@@ -126,7 +123,6 @@ std::vector<double> get_a(
     return a;
 }
 
-// Todo test the following
 std::vector<double> get_b(
         std::vector<double> D,
         std::vector<double> x
@@ -151,9 +147,9 @@ std::vector<double> get_c(
 ) {
     std::vector<double> c;
 
-    for (unsigned i = 1; i < a.size() - 1; i++) {
+    for (unsigned i = 0; i < a.size(); i++) {
         c.push_back(
-                a[i] + b[i] + (2 / t_step) + C
+                a[i] + b[i] + C + (2 / t_step)
         );
     }
 

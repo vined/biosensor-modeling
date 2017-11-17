@@ -72,10 +72,42 @@ TEST(ApproximationsUtilsTest, GetNextFromHalfValues) {
 
 TEST(ApproximationsUtilsTest, Get_a) {
 
-std::vector<double> D {0.0, 0.0, 0.0, 0.4, 0.4, 0.4};
-std::vector<double> x {0.0, 0.05, 0.1, 0.18, 0.3, 0.8};
-std::vector<double> next = get_a(D, x);
-// Todo create ElementsAreDoubleArray method with precision check
-//EXPECT_THAT(next, testing::ElementsAreArray({0.0, 0.0, 25.0, 10.752688172}));
+    std::vector<double> D {0.0, 0.0, 0.0, 0.4, 0.4, 0.4};
+    std::vector<double> x {0.0, 0.05, 0.1, 0.18, 0.3, 0.8};
+    std::vector<double> a = get_a(D, x);
+
+    std::vector<double> expected = {0.0, 0.0, 25.0, 10.752688172};
+
+    ASSERT_EQ(a.size(), expected.size());
+    for (unsigned i = 0; i < a.size(); i++) {
+        EXPECT_NEAR(a[i], expected[i], 1e-8);
+    }
+}
+
+TEST(ApproximationsUtilsTest, Get_b) {
+
+    std::vector<double> D {0.0, 0.0, 0.0, 0.4, 0.4, 0.4};
+    std::vector<double> x {0.0, 0.05, 0.1, 0.18, 0.3, 0.8};
+    std::vector<double> b = get_b(D, x);
+
+    std::vector<double> expected = {0.0, 38.461538462, 33.333333333, 2.580645161};
+
+    ASSERT_EQ(b.size(), expected.size());
+    for (unsigned i = 0; i < b.size(); i++) {
+        EXPECT_NEAR(b[i], expected[i], 1e-8);
+    }
+}
+
+TEST(ApproximationsUtilsTest, Get_c) {
+
+    std::vector<double> a {0.0, 0.01, 0.04, 0.14};
+    std::vector<double> b {0.1, 0.02, 0.3, 0.05};
+    std::vector<double> c = get_c(0.002, 0.00013, a, b);
+
+    EXPECT_THAT(c, testing::ElementsAreArray({1000.10013, 1000.03013, 1000.34013, 1000.19013}));
+//    ASSERT_EQ(c.size(), expected.size());
+//    for (unsigned i = 0; i < c.size(); i++) {
+//        EXPECT_DOUBLE_EQ(c[i], expected[i], 1e-8);
+//    }
 }
 }
