@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 #include "values-net.h"
 #include "machine-precision.h"
@@ -64,30 +65,23 @@ int main(int argc, char* argv[]) {
 
     // Generic system information
     int mp = getMachinePrecision();
-    std::cout.precision(mp-1);
+    std::cout.precision(mp);
     std::cout << "Machine precision: " << mp << std::endl;
     std::cout << "Size of double: " << sizeof(double) << std::endl;
 
-    double delta = 10^(mp/2);
+    double delta = pow(10.0, -mp/2);
     std::cout << "Delta: " << delta << std::endl;
 
     // Creating x and t values net
     std::cout << "Generating x values" << std::endl;
     std::vector<double> x = generateNonLinearValuesNet(grid_params.d_e, grid_params.d_m, grid_params.N_b);
     std::cout << "Done, x values size: " << x.size() << std::endl;
-    exportVector("x", x);
+    exportVector("x", x, mp);
 
     std::cout << "Generating t values" << std::endl;
     std::vector<double> t = getTimeIntervals(grid_params.T, grid_params.M, mp);
     std::cout << "Done, t values size: " << t.size() << std::endl;
-    exportVector("t", t);
-
-    std::vector<double> dl {1, 1, 1, 1, 5};
-    std::vector<double> d  {2, 2, 2, 2, 2};
-    std::vector<double> du {5, 1, 1, 1, 1};
-    std::vector<double> b  {1, 2, 3, 4, 5};
-    std::vector<double> actual = solveTridiagonalMatrix(dl, d, du, b);
-    printVector(actual, 1000);
+    exportVector("t", t, mp);
 
     return 0;
 }

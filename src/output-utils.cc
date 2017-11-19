@@ -16,7 +16,7 @@ void printVector(std::vector<double> vect, int max) {
    }
 }
 
-void exportVector(std::string name, std::vector<double> vect) {
+void exportVector(std::string name, std::vector<double> vect, int precision) {
 
     std::string fileName = OUTPUT + name + ".dat";
 
@@ -24,6 +24,7 @@ void exportVector(std::string name, std::vector<double> vect) {
 
     std::ofstream dat;
     dat.open(fileName);
+    dat.precision(precision);
 
     dat << "# " << name << std::endl;
 

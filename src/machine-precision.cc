@@ -5,14 +5,14 @@
 using namespace std;
 
 
-#define MAX_ITERATIONS 100
+#define MAX_ITERATIONS 20
 
 int getMachinePrecision() {
     double value = 10;
 
     for (int i = 2; i < MAX_ITERATIONS; i++) {
-        int exp = -i;
-        double epsilon = pow(value, exp);
+        int exp = i;
+        double epsilon = pow(value, -exp);
         if (value == (value + epsilon)) {
             return exp;
         }
