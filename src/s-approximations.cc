@@ -164,7 +164,8 @@ std::vector<std::vector<double>> approximate_S(
     std::vector<double> S_k = get_zero_vector(x.size()-1);
     S_k.push_back(S_0);
 
-    for (int i = 1; i < t.size(); i++) {
+    for (int i = 1; i < t.size()-1; i++) {
+        double t_step = t[i+1] - t[i];
         std::vector<double> S_i = _get_next_S_k(S_k, D_s, x, alpha, f, t_step, V_max, K_m, C1, q, delta);
         S.push_back(S_i);
         S_k(S_i);

@@ -33,7 +33,7 @@ double getResidual(
     // from i to N - 1, not taking first and last element
     for (unsigned i = 1; i < y.size() - 1; i++) {
 
-        double values[4] = {abs(a[i]), abs(b[i]), abs(c[i]), abs(F[i])};
+        double values[4] = {fabs(a[i]), fabs(b[i]), fabs(c[i]), fabs(F[i])};
         double *m = std::max_element(std::begin(values), std::end(values));
         double res = a[i] * y[i - 1] - c[i] * y[i] + b[i] * y[i + 1] + F[i];
         double residual = abs(res) / *m;

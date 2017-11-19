@@ -10,7 +10,6 @@
 void approximate(
         std::vector<double> D_s,
         std::vector<double> x,
-        std::vector<double> h,
         std::vector<double> t,
         std::vector<int> alpha,
         std::vector<double> f,

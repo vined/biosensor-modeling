@@ -141,6 +141,16 @@ approximations-utils-unittest.o : $(TESTS_DIR)/approximations-utils-unittest.cc 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TESTS_DIR)/approximations-utils-unittest.cc
 
 
+# S approximations tests
+
+s-approximations.o : $(USER_DIR)/s-approximations.cc \
+		$(USER_DIR)/s-approximations.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/s-approximations.cc
+
+s-approximations-unittest.o : $(TESTS_DIR)/s-approximations-unittest.cc \
+		$(USER_DIR)/s-approximations.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TESTS_DIR)/s-approximations-unittest.cc
+
 # main
 
 biosensor-modeling-unittests : exponent-intervals.o values-range.o values-net.o time-intervals.o \

@@ -4,7 +4,7 @@ LDLIBS += -llapack
 
 objects = main.o \
     exponent-intervals.o values-range.o values-net.o machine-precision.o time-intervals.o \
-    approximations-utils.o approximations.o \
+    parameters-utils.o approximations-utils.o approximations.o \
     output-utils.o
 
 biosensor-modeling: $(objects)
@@ -16,6 +16,7 @@ values-range.o: values-range.h
 values-net.o: values-net.h
 time-intervals.o: time-intervals.h
 machine-precision.o: machine-precision.h
+parameters-utils.o: parameters-utils.h
 output-utils.o: output-utils.h
 approximations-utils.o: approximations-utils.h
 s-approximations.o: s-approximations.h

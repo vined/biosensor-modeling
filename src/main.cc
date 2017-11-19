@@ -1,6 +1,4 @@
 #include <iostream>
-#include <stdlib.h>
-#include <fstream>
 #include <vector>
 
 #include "values-net.h"
@@ -8,6 +6,7 @@
 #include "time-intervals.h"
 #include "output-utils.h"
 #include "approximations-utils.h"
+#include "parameters-utils.h"
 
 
 #define ARG_COUNT 6
@@ -17,67 +16,17 @@ static void show_usage()
 {
     std::cout << "Usage: biosensor-modeling de dm Nb T M\n"
               << "Demo mode: biosensor-modeling\n\n"
+
               << "Options:\n"
               << "\t-h\t\tShow this help message\n"
-              << "Parameters:\n"
+
+              << "Grid parameters:\n"
               << "\tde\t\tWidth of bio-sensor ferment part\n"
               << "\tdm\t\tWidth of bio-sensor membrane part\n"
               << "\tNb\t\tDensity of bio-sensor width values (x)\n"
               << "\tT\t\tMaximum model time\n"
               << "\tM\t\tTime steps count\n"
               << std::endl;
-}
-
-struct parameters {
-    // Width of bio-sensor parts widths
-    double d_e;
-    double d_m;
-    // Width and time matrix parameters
-    int N_b;
-    int T;
-    int M;
-
-    parameters() {}
-    parameters(double _d_e, double _d_m, int _N_b, int _T, int _M) {
-        d_e = _d_e;
-        d_m = _d_m;
-        N_b = _N_b;
-        T = _T;
-        M = _M;
-    }
-
-    std::string toString() {
-        std::string str = "Parameters: ";
-        str += "d_e=" + std::to_string(d_e) + ", "
-            + "d_m=" + std::to_string(d_m) + ", "
-            + "N_b=" + std::to_string(N_b) + ", "
-            + "T=" + std::to_string(T) + ", "
-            + "M=" + std::to_string(M);
-
-        return str;
-    }
-};
-
-static parameters getDemoModeParameters() {
-    return parameters
-    (
-        4.0, // d_e
-        5.0, // d_m
-        1000, // N_b
-        1000, // T
-        1000000 // M
-    );
-}
-
-static parameters parseParameters(int argc, char* argv[]) {
-    return parameters
-    (
-        atof(argv[1]), // d_e
-        atof(argv[2]), // d_m
-        atoi(argv[3]), // N_b
-        atoi(argv[4]), // T
-        atoi(argv[5])  // M
-    );
 }
 
 /*
@@ -97,38 +46,39 @@ p = ( x[1] / (x[2] * (x[2]-x[1])) ) * P[k][2]
 int main(int argc, char* argv[]) {
 
     // Retrieving parameters
-    parameters params;
+    grid_parameters grid_params;
 
     if (argc == 1) {
         std::cout << "-- Demo Mode --\n"
                   << "To see the manual run biosensor-modeling -h" << std::endl;
-        params = getDemoModeParameters();
+        grid_params = getDemoModeGridParameters();
 
     } else if (argc == ARG_COUNT) {
-        params = parseParameters(argc, argv);
+        grid_params = parseGridParameters(argc, argv);
     } else {
         show_usage();
         return 0;
     }
 
-    std::cout << params.toString() << std::endl;
+    std::cout << grid_params.toString() << std::endl;
 
     // Generic system information
     int mp = getMachinePrecision();
     std::cout.precision(mp-1);
-    std::cout << "Machine precision : " << mp << std::endl;
-    std::cout << "Size of double : " << sizeof(double) << std::endl;
+    std::cout << "Machine precision: " << mp << std::endl;
+    std::cout << "Size of double: " << sizeof(double) << std::endl;
 
     double delta = 10^(mp/2);
+    std::cout << "Delta: " << delta << std::endl;
 
     // Creating x and t values net
     std::cout << "Generating x values" << std::endl;
-    std::vector<double> x = generateNonLinearValuesNet(params.d_e, params.d_m, params.N_b);
+    std::vector<double> x = generateNonLinearValuesNet(grid_params.d_e, grid_params.d_m, grid_params.N_b);
     std::cout << "Done, x values size: " << x.size() << std::endl;
     exportVector("x", x);
 
     std::cout << "Generating t values" << std::endl;
-    std::vector<double> t = getTimeIntervals(params.T, params.M, mp);
+    std::vector<double> t = getTimeIntervals(grid_params.T, grid_params.M, mp);
     std::cout << "Done, t values size: " << t.size() << std::endl;
     exportVector("t", t);
 
