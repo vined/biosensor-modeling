@@ -65,7 +65,7 @@ double getMidVal(std::vector<double> v, int i, bool up) {
 std::vector<double> getZeroVector(int n) {
     std::vector<double> d(n);
 
-    for(int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         d[i] = 0.0;
     }
 
@@ -75,7 +75,7 @@ std::vector<double> getZeroVector(int n) {
 std::vector<double> slice(int from, int to, std::vector<double> vec) {
     std::vector<double> result;
 
-    for(int i = from; i <= to; i++) {
+    for (int i = from; i <= to; i++) {
         result.push_back(vec[i]);
     }
 
@@ -98,9 +98,9 @@ std::vector<double> getNextFromHalfValues(
 ) {
     std::vector<double> result;
 
-    for(unsigned i = 0; i < prev.size(); i++) {
+    for (unsigned i = 0; i < prev.size(); i++) {
         result.push_back(
-                2*y[i] - prev[i]
+                2 * y[i] - prev[i]
         );
     }
 
@@ -114,7 +114,7 @@ std::vector<double> get_a(
     std::vector<double> a;
 
     for (unsigned i = 1; i < x.size() - 1; i++) {
-        double h = x[i]-x[i-1];
+        double h = x[i] - x[i - 1];
         a.push_back(
                 (2 * getMidVal(D, i, false)) / (h * (x[i + 1] - x[i - 1]))
         );
@@ -130,7 +130,7 @@ std::vector<double> get_b(
     std::vector<double> b;
 
     for (unsigned i = 1; i < x.size() - 1; i++) {
-        double h = x[i+1]-x[i];
+        double h = x[i + 1] - x[i];
         b.push_back(
                 (2 * getMidVal(D, i, true)) / (h * (x[i + 1] - x[i - 1]))
         );
@@ -165,13 +165,13 @@ std::vector<double> solveTridiagonalMatrix(
     int n = b.size();
     std::vector<double> dl1 = slice(1, n, dl);
     std::vector<double> d1(d);
-    std::vector<double> du1 = slice(0, n-1, du);
+    std::vector<double> du1 = slice(0, n - 1, du);
 
     int info;
     int one = 1;
     std::vector<double> x(b);
 
-//    dgtsv_(&n, &one, &*dl1.begin(), &*d1.begin(), &*du1.begin(), &*x.begin(), &n, &info);
+    dgtsv_(&n, &one, &*dl1.begin(), &*d1.begin(), &*du1.begin(), &*x.begin(), &n, &info);
 
     if (info != 0) {
         throw 200;

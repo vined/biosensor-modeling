@@ -130,7 +130,7 @@ time-intervals-unittest.o : $(TESTS_DIR)/time-intervals-unittest.cc \
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TESTS_DIR)/time-intervals-unittest.cc
 
 
-# approximations tests
+# approximations utils tests
 
 approximations-utils.o : $(USER_DIR)/approximations-utils.cc \
 		$(USER_DIR)/approximations-utils.h $(GTEST_HEADERS)
@@ -147,5 +147,5 @@ biosensor-modeling-unittests : exponent-intervals.o values-range.o values-net.o 
 		exponent-intervals-unittest.o time-intervals-unittest.o \
 		approximations-utils.o approximations-utils-unittest.o \
 		gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -llapack -o $@
 

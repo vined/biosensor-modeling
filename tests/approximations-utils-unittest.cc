@@ -105,9 +105,21 @@ TEST(ApproximationsUtilsTest, Get_c) {
     std::vector<double> c = get_c(0.002, 0.00013, a, b);
 
     EXPECT_THAT(c, testing::ElementsAreArray({1000.10013, 1000.03013, 1000.34013, 1000.19013}));
-//    ASSERT_EQ(c.size(), expected.size());
-//    for (unsigned i = 0; i < c.size(); i++) {
-//        EXPECT_DOUBLE_EQ(c[i], expected[i], 1e-8);
-//    }
+}
+
+TEST(ApproximationsUtilsTest, SolveTridiagonalMatrix) {
+
+    std::vector<double> dl {1, 1, 1, 1, 5};
+    std::vector<double> d  {2, 2, 2, 2, 2};
+    std::vector<double> du {5, 1, 1, 1, 1};
+    std::vector<double> b  {1, 2, 3, 4, 5};
+    std::vector<double> actual = solveTridiagonalMatrix(dl, d, du, b);
+
+    std::vector<double> expected = {0.5, 0.0, 1.5, 0.0, 2.5};
+
+    ASSERT_EQ(actual.size(), expected.size());
+    for (unsigned i = 0; i < actual.size(); i++) {
+        EXPECT_NEAR(actual[i], expected[i], 1e-8);
+    }
 }
 }

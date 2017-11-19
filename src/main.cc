@@ -7,6 +7,7 @@
 #include "machine-precision.h"
 #include "time-intervals.h"
 #include "output-utils.h"
+#include "approximations-utils.h"
 
 
 #define ARG_COUNT 6
@@ -130,6 +131,13 @@ int main(int argc, char* argv[]) {
     std::vector<double> t = getTimeIntervals(params.T, params.M, mp);
     std::cout << "Done, t values size: " << t.size() << std::endl;
     exportVector("t", t);
+
+    std::vector<double> dl {1, 1, 1, 1, 5};
+    std::vector<double> d  {2, 2, 2, 2, 2};
+    std::vector<double> du {5, 1, 1, 1, 1};
+    std::vector<double> b  {1, 2, 3, 4, 5};
+    std::vector<double> actual = solveTridiagonalMatrix(dl, d, du, b);
+    printVector(actual, 1000);
 
     return 0;
 }
