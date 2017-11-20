@@ -7,7 +7,7 @@
 #include "p-approximations.h"
 
 
-void approximate(
+void approximate_I(
         std::vector<double> D_s,
         std::vector<double> D_p,
         std::vector<double> x,
@@ -20,9 +20,17 @@ void approximate(
         double K_m,
         double C1,
         double C2,
+        int n_e,
+        double F,
         double q,
         double delta
 ) {
+    double p0 = (x[1] + x[2]) / (x[1] * x[2]);
+    double p1 = x[2] / (x[1] * (x[2] - x[1]));
+    double p2 = x[1] / (x[2] * (x[2] - x[1]));
+
+    std::vector<double> I;
+    I.push_back(0.0);
 
     std::vector<std::vector<double>> S;
     std::vector<std::vector<double>> P;
@@ -52,6 +60,11 @@ void approximate(
 
         P.push_back(P_i);
         P_k(P_i);
+
+        // Calculate current near electrode
+        I.push_back(
+                n_e * F * Dpe * ( - (p0 * P_k[0]) + (p1 * P_k[1]) - (p2 * P_k[2]) )
+        );
     }
 
     return;
