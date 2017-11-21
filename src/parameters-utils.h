@@ -9,9 +9,9 @@ struct grid_parameters {
     double d_e;
     double d_m;
     // Width and time matrix parameters
-    int N_b;
-    int T;
-    int M;
+    unsigned N_b;
+    unsigned T;
+    unsigned M;
 
     grid_parameters() {}
     grid_parameters(double _d_e, double _d_m, int _N_b, int _T, int _M) {
@@ -34,6 +34,62 @@ struct grid_parameters {
     }
 };
 
-grid_parameters getDemoModeGridParameters();
+grid_parameters getDemoGridParameters();
 grid_parameters parseGridParameters(int argc, char *argv[]);
 
+struct model_parameters {
+    double Dse;
+    double Dsm;
+    double Dpe;
+    double Dpm;
+    double C1;
+    double C2;
+    double Vmax;
+    double Km;
+    double S0;
+    unsigned ne;
+
+    model_parameters() {}
+    model_parameters(
+            double _Dse,
+            double _Dsm,
+            double _Dpe,
+            double _Dpm,
+            double _C1,
+            double _C2,
+            double _Vmax,
+            double _Km,
+            double _S0,
+            unsigned _ne
+    ) {
+        Dse = _Dse;
+        Dsm = _Dsm;
+        Dpe = _Dpe;
+        Dpm = _Dpm;
+        C1 = _C1;
+        C2 = _C2;
+        Vmax = _Vmax;
+        Km = _Km;
+        S0 = _S0;
+        ne = _ne;
+    }
+
+    std::string toString() {
+        std::string str = "Model parameters: ";
+        str += "Dse=" + std::to_string(Dse) + ", "
+              + "Dsm=" + std::to_string(Dsm) + ", "
+              + "Dpe=" + std::to_string(Dpe) + ", "
+              + "Dpm=" + std::to_string(Dpm) + ", "
+              + "C1=" + std::to_string(C1) + ", "
+              + "C2=" + std::to_string(C2) + ", "
+              + "Vmax=" + std::to_string(Vmax) + ", "
+              + "Km=" + std::to_string(Km) + ", "
+              + "S0=" + std::to_string(S0) + ", "
+              + "ne=" + std::to_string(ne);
+
+        return str;
+    }
+};
+
+model_parameters getDemoModeParameters();
+model_parameters parseModelParameters(int argc, char *argv[]);

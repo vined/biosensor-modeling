@@ -5,13 +5,16 @@
 #include "approximations-utils.h"
 #include "s-approximations.h"
 #include "p-approximations.h"
+#include "approximations.h"
 
+
+#define F 96485.3365 // Faraday constant (C/mol)
 
 void approximate_I(
-        std::vector<double> D_s,
-        std::vector<double> D_p,
         std::vector<double> x,
         std::vector<double> t,
+        std::vector<double> D_s,
+        std::vector<double> D_p,
         std::vector<int> alpha,
         std::vector<double> f,
         std::vector<double> g,
@@ -21,7 +24,6 @@ void approximate_I(
         double C1,
         double C2,
         int n_e,
-        double F,
         double q,
         double delta
 ) {
@@ -36,12 +38,12 @@ void approximate_I(
     std::vector<std::vector<double>> P;
 
     // S initial values
-    std::vector<double> S_k = get_zero_vector(x.size()-1);
+    std::vector<double> S_k = getZeroVector(x.size()-1);
     S_k.push_back(S_0);
     S.push_back(S_k);
 
     // P initial values
-    std::vector<double> P_k = get_zero_vector(x.size());
+    std::vector<double> P_k = getZeroVector(x.size());
     P.push_back(P_k);
 
     for (int i = 1; i < t.size()-1; i++) {
@@ -52,18 +54,18 @@ void approximate_I(
         std::vector<double> S_i = getNextFromHalfValues(S_k, S_k_half);
 
         S.push_back(S_i);
-        S_k(S_i);
+        S_k = S_i;
 
-        // Approximate S
-        std::vector<double> P_k_half = getApproximatePkHalf(P_k, S_k_half, D_p, x, alpha, g, t_step, V_max, K_m, C1, q);
+        // Approximate P
+        std::vector<double> P_k_half = getApproximatePkHalf(P_k, S_k_half, D_p, x, alpha, g, t_step, V_max, K_m, C2, q);
         std::vector<double> P_i = getNextFromHalfValues(P_k, P_k_half);
 
         P.push_back(P_i);
-        P_k(P_i);
+        P_k = P_i;
 
         // Calculate current near electrode
         I.push_back(
-                n_e * F * Dpe * ( - (p0 * P_k[0]) + (p1 * P_k[1]) - (p2 * P_k[2]) )
+                n_e * F * D_p[0] * ( - (p0 * P_k[0]) + (p1 * P_k[1]) - (p2 * P_k[2]) )
         );
     }
 

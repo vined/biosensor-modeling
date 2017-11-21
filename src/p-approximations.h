@@ -13,4 +13,3 @@ std::vector<double> getApproximatePkHalf(
         double C2,
         double q
 );
-

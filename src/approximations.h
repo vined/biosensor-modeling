@@ -1,3 +1,20 @@
 #include <vector>
 
-void approximatimate(std::vector<double> x, std::vector<double> t, double delta);
+void approximate_I(
+        std::vector<double> x,
+        std::vector<double> t,
+        std::vector<double> D_s,
+        std::vector<double> D_p,
+        std::vector<int> alpha,
+        std::vector<double> f,
+        std::vector<double> g,
+        double S_0,
+        double V_max,
+        double K_m,
+        double C1,
+        double C2,
+        int n_e,
+        double F,
+        double q,
+        double delta
+);
