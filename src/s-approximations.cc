@@ -6,7 +6,7 @@
 #include "approximations-utils.h"
 
 
-#define MAX_ITERATIONS = 1000
+#define MAX_ITERATIONS 1000
 
 std::vector<double> _get_F(
         double t_step,
@@ -59,10 +59,10 @@ std::vector<double> _get_new_approximations(
 
     double y0 = _get_new_y_0(A, B, Y, S_0, q);
 
-    y_new.push_back(yN);
+    y_new.push_back(y0);
     for (int i = 1; i < N-1; i++) {
         y_new.push_back(
-                y0 * A[i] + yN * B[i] + Y[i]
+                y0 * A[i] + S_0 * B[i] + Y[i]
         );
     }
     y_new.push_back(S_0);
@@ -72,8 +72,11 @@ std::vector<double> _get_new_approximations(
 
 std::vector<double> _get_new_y(
         std::vector<double> S_k,
-        std::vector<double> D_s,
+        std::vector<double> y_old,
         std::vector<double> x,
+        std::vector<double> a,
+        std::vector<double> b,
+        std::vector<double> c,
         std::vector<int> alpha,
         std::vector<double> f,
         double t_step,
@@ -83,9 +86,6 @@ std::vector<double> _get_new_y(
         double q,
         double delta
 ) {
-    std::vector<double> a = get_a(D_s, x);
-    std::vector<double> b = get_b(D_s, x);
-    std::vector<double> c = get_c(t_step, C1, a, b);
     std::vector<double> F = _get_F(t_step, V_max, K_m, S_k, y_old, alpha, f);
 
     std::vector<double> A;
@@ -98,9 +98,9 @@ std::vector<double> _get_new_y(
     std::vector<double> tmp_AB = solveTridiagonalMatrix(a, c, b, getZeroVector(b.size()));
     std::vector<double> tmp_Y = solveTridiagonalMatrix(a, c, b, negateVector(F));
 
-    A.insert(A.back(), tmp_AB);
-    B.insert(B.back(), tmp_AB);
-    Y.insert(Y.back(), tmp_Y);
+    A.insert(A.end(), tmp_AB.begin(), tmp_AB.end());
+    B.insert(B.end(), tmp_AB.begin(), tmp_AB.end());
+    Y.insert(Y.end(), tmp_Y.begin(), tmp_Y.end());
     A.push_back(0);
     B.push_back(1);
     Y.push_back(0);
@@ -124,10 +124,16 @@ std::vector<double> getApproximateSkHalf(
 
     std::vector<double> y_old(S_k);
     std::vector<double> y_new;
+
+    std::vector<double> a = get_a(D_s, x);
+    std::vector<double> b = get_b(D_s, x);
+    std::vector<double> c = get_c(t_step, C1, a, b);
+
     double progress = 0;
     double residual = 0;
     double allowed_error = 0;
     int i = 0;
+
 
     do {
         if (i > MAX_ITERATIONS) {
@@ -135,12 +141,13 @@ std::vector<double> getApproximateSkHalf(
         }
         i++;
 
-        y_new = _get_new_y(S_k, D_s, x, alpha, f, t_step, V_max, K_m, C1, q, delta);
+        y_new = _get_new_y(S_k, y_old, x, a, b, c, alpha, f, t_step, V_max, K_m, C1, q, delta);
         std::vector<double> F_new = _get_F(t_step, V_max, K_m, S_k, y_old, alpha, f);
 
         progress = getProgress(y_new, y_old);
         residual = getResidual(y_new, a, b, c, F_new);
         allowed_error = getAllowedError(y_new, delta);
+        y_old = y_new;
 
     } while (allowed_error > progress && allowed_error > residual);
 

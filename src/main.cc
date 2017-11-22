@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
         std::cout << "-- Demo Mode --\n"
                   << "To see the manual run biosensor-modeling -h" << std::endl;
         grid_params = getDemoGridParameters();
-        model_params = getDemoModeParameters();
+        model_params = getDemoModelParameters();
 
     } else if (argc == ARG_COUNT) {
         grid_params = parseGridParameters(argc, argv);

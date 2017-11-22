@@ -6,7 +6,7 @@
 #include "approximations-utils.h"
 
 
-#define MAX_ITERATIONS = 1000
+#define MAX_ITERATIONS 1000
 
 
 std::vector<double> _get_G(
@@ -92,8 +92,8 @@ std::vector<double> getApproximatePkHalf(
     std::vector<double> tmp_B = solveTridiagonalMatrix(a, c, b, getZeroVector(b.size()));
     std::vector<double> tmp_Y = solveTridiagonalMatrix(a, c, b, negateVector(G));
 
-    B.insert(B.back(), tmp_B);
-    Y.insert(Y.back(), tmp_Y);
+    B.insert(B.end(), tmp_B.begin(), tmp_B.end());
+    Y.insert(Y.end(), tmp_Y.begin(), tmp_Y.end());
     B.push_back(1);
     Y.push_back(0);
 

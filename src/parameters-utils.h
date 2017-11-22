@@ -91,5 +91,5 @@ struct model_parameters {
     }
 };
 
-model_parameters getDemoModeParameters();
+model_parameters getDemoModelParameters();
 model_parameters parseModelParameters(int argc, char *argv[]);

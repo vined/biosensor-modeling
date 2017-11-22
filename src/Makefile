@@ -3,8 +3,9 @@ CXXFLAGS = -std=c++11
 LDLIBS += -llapack
 
 objects = main.o \
-    exponent-intervals.o values-range.o values-net.o machine-precision.o time-intervals.o \
-    parameters-utils.o approximations-utils.o approximations.o \
+    exponent-intervals.o values-range.o values-net.o time-intervals.o \
+    parameters-utils.o machine-precision.o \
+    s-approximations.o p-approximations.o approximations-utils.o approximations.o \
     output-utils.o
 
 biosensor-modeling: $(objects)
