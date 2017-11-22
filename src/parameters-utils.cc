@@ -9,9 +9,9 @@ grid_parameters getDemoGridParameters() {
     return grid_parameters
             (
                     //Grid parameters
-                    0.000004, // d_e
-                    0.000005, // d_m
-                    1000, // N_b
+                    5.0, // d_e
+                    1.0, // d_m
+                    10000, // N_b
                     1000, // T
                     1000000 // M
             );

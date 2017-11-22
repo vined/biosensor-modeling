@@ -92,7 +92,9 @@ int main(int argc, char *argv[]) {
 
     // Creating x and t values field
     std::cout << "Generating x values" << std::endl;
-    std::vector<double> x = generateNonLinearValuesNet(grid_params.d_e, grid_params.d_m, grid_params.N_b);
+    values_net_params field_params = getNonLinearValuesNetParams(grid_params.d_e, grid_params.d_m, grid_params.N_b);
+    std::cout << "q: " << field_params.q << std::endl;
+    std::vector<double> x = generateNonLinearValuesNet(field_params);
     std::cout << "Done, x values size: " << x.size() << std::endl;
     exportVector("x", x, mp);
 

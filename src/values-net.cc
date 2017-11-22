@@ -1,18 +1,13 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 #include "exponent-intervals.h"
 #include "values-range.h"
 #include "values-net.h"
 
 using namespace std;
-
-/*
-Todo: test the following conditions
-h[0] <= (h[n-1])^2
-h[0] << h[n-1] << 1
-*/
 
 
 double _get_next_h(double h_prev, double q) {
@@ -54,14 +49,15 @@ vector<double> _get_theta_block(int N_theta, double h) {
     return theta;
 }
 
-vector<double> _get_steps(double d_e, double d_m, values_net_params params) {
+vector<double> _get_steps(values_net_params params) {
+
     vector<double> I = _get_I(params.N_i, params.q);
     vector<double> theta = _get_theta_block(params.N_theta, params.h_I_max);
     vector<double> rev_I (I.size());
     reverse_copy(I.begin(), I.end(), rev_I.begin());
 
-    vector<double> d1 = _get_d_block(I, rev_I, theta, d_e > d_m);
-    vector<double> d2 = _get_d_block(I, rev_I, theta, d_e < d_m);
+    vector<double> d1 = _get_d_block(I, rev_I, theta, params.d_e > params.d_m);
+    vector<double> d2 = _get_d_block(I, rev_I, theta, params.d_e < params.d_m);
 
     vector<double> result;
 
@@ -73,6 +69,9 @@ vector<double> _get_steps(double d_e, double d_m, values_net_params params) {
 values_net_params getNonLinearValuesNetParams(double d_e, double d_m, int N_b) {
 
     values_net_params params;
+    params.d_e = d_e;
+    params.d_m = d_m;
+    params.N_b = N_b;
     params.h_max = get_h_max(d_e, d_m, N_b);
     params.q = get_q(params.h_max);
     params.N_i = get_N(params.q, params.h_max);
@@ -87,11 +86,15 @@ values_net_params getNonLinearValuesNetParams(double d_e, double d_m, int N_b) {
     return params;
 }
 
-vector<double> generateNonLinearValuesNet(double d_e, double d_m, int N_b) {
+vector<double> generateNonLinearValuesNet(values_net_params params) {
 
-    values_net_params params =
-        getNonLinearValuesNetParams(d_e, d_m, N_b);
-    vector<double> steps = _get_steps(d_e, d_m, params);
+    vector<double> steps = _get_steps(params);
+
+    auto biggest = std::max_element(steps.begin(), steps.end());
+    std::cout << "h_max: " << *biggest << std::endl;
+    auto smallest = std::min_element(steps.begin(), steps.end());
+    std::cout << "h_mix: " << *smallest << std::endl;
+    std::cout << "h_max/h_mix: " << *biggest / *smallest << std::endl;
 
     double x = 0;
     vector<double> values_net;

@@ -177,13 +177,15 @@ TEST(ValuesNet, GetThetaBlock) {
 TEST(ValuesNet, GetStepsDeIsLessDm) {
 
     values_net_params params;
+    params.d_e = 2.0;
+    params.d_m = 3.0;
     params.N_i = 4;
     params.q = 3.0;
 
     params.N_theta = 2;
     params.h_I_max = 0.5;
 
-    vector<double> steps = _get_steps(2.0, 3.0, params);
+    vector<double> steps = _get_steps(params);
     ASSERT_EQ(18, steps.size());
 
     // d1
@@ -215,13 +217,15 @@ TEST(ValuesNet, GetStepsDeIsLessDm) {
 TEST(ValuesNet, GetStepsDeIsGreaterDm) {
 
     values_net_params params;
+    params.d_e = 3.0;
+    params.d_m = 2.0;
     params.N_i = 4;
     params.q = 3.0;
 
     params.N_theta = 2;
     params.h_I_max = 0.5;
 
-    vector<double> steps = _get_steps(3.0, 2.0, params);
+    vector<double> steps = _get_steps(params);
     ASSERT_EQ(18, steps.size());
 
     // d1
@@ -253,10 +257,12 @@ TEST(ValuesNet, GetStepsDeIsGreaterDm) {
 TEST(ValuesNet, GetStepsDeIsEqualDm) {
 
     values_net_params params;
+    params.d_e = 2.0;
+    params.d_m = 2.0;
     params.N_i = 4;
     params.q = 3.0;
 
-    vector<double> steps = _get_steps(2.0, 2.0, params);
+    vector<double> steps = _get_steps(params);
     ASSERT_EQ(16, steps.size());
 
     // d1
@@ -284,16 +290,20 @@ TEST(ValuesNet, GetStepsDeIsEqualDm) {
 
 TEST(ValuesNet, GenerateNonLinearValuesNetWhenDeIsEqualDm) {
 
-    vector<double> net1 = generateNonLinearValuesNet(4, 5, 100);
+    values_net_params params1 = getNonLinearValuesNetParams(4, 5, 100);
+    vector<double> net1 = generateNonLinearValuesNet(params1);
     EXPECT_EQ(1907, net1.size());
 
-    vector<double> net2 = generateNonLinearValuesNet(4, 5, 1000);
+    values_net_params params2 = getNonLinearValuesNetParams(4, 5, 1000);
+    vector<double> net2 = generateNonLinearValuesNet(params2);
     EXPECT_EQ(28153, net2.size());
 
-    vector<double> net3 = generateNonLinearValuesNet(4, 5, 10000);
+    values_net_params params3 = getNonLinearValuesNetParams(4, 5, 10000);
+    vector<double> net3 = generateNonLinearValuesNet(params3);
     EXPECT_EQ(373441, net3.size());
 
-    vector<double> net4 = generateNonLinearValuesNet(4, 5, 100000);
+    values_net_params params4 = getNonLinearValuesNetParams(4, 5, 100000);
+    vector<double> net4= generateNonLinearValuesNet(params4);
     EXPECT_EQ(4655201, net4.size());
 }
 
