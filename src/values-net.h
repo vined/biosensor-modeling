@@ -15,7 +15,7 @@ struct values_net_params {
     double N;
 };
 
-vector<double> _get_I(int N_i, double q);
+vector<double> _get_I(int N_i, double q, double I_length);
 vector<double> _get_d_block(vector<double> I, vector<double> rev_I, vector<double> theta, bool include_theta);
 vector<double> _get_theta_block(int N_theta, double h);
 vector<double> _get_steps(values_net_params params);

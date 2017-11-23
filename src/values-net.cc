@@ -1,7 +1,6 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
-#include <iostream>
 
 #include "exponent-intervals.h"
 #include "values-range.h"
@@ -9,14 +8,17 @@
 
 using namespace std;
 
+double _get_I_length(double d_e, double d_m) {
+    return fmin(d_e, d_m) / 2;
+}
 
 double _get_next_h(double h_prev, double q) {
     return h_prev * q;
 }
 
-vector<double> _get_I(int N_i, double q) {
+vector<double> _get_I(int N_i, double q, double I_length) {
 
-    double h = (q-1) / (pow(q, N_i) - 1);
+    double h = I_length * ((q-1) / (pow(q, N_i) - 1));
     vector<double> I;
 
     for (int i=0; i<N_i; i++) {
@@ -51,7 +53,7 @@ vector<double> _get_theta_block(int N_theta, double h) {
 
 vector<double> _get_steps(values_net_params params) {
 
-    vector<double> I = _get_I(params.N_i, params.q);
+    vector<double> I = _get_I(params.N_i, params.q, _get_I_length(params.d_e, params.d_m));
     vector<double> theta = _get_theta_block(params.N_theta, params.h_I_max);
     vector<double> rev_I (I.size());
     reverse_copy(I.begin(), I.end(), rev_I.begin());
@@ -89,12 +91,6 @@ values_net_params getNonLinearValuesNetParams(double d_e, double d_m, int N_b) {
 vector<double> generateNonLinearValuesNet(values_net_params params) {
 
     vector<double> steps = _get_steps(params);
-
-    auto biggest = std::max_element(steps.begin(), steps.end());
-    std::cout << "h_max: " << *biggest << std::endl;
-    auto smallest = std::min_element(steps.begin(), steps.end());
-    std::cout << "h_mix: " << *smallest << std::endl;
-    std::cout << "h_max/h_mix: " << *biggest / *smallest << std::endl;
 
     double x = 0;
     vector<double> values_net;

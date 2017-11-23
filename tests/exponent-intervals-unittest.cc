@@ -141,7 +141,7 @@ TEST(ValuesNet, GetNonLinearValuesNetParams) {
 
 TEST(ValuesNet, GetI) {
 
-    vector<double> i_block = _get_I(4, 3.0);
+    vector<double> i_block = _get_I(4, 3.0, 1.0);
     ASSERT_EQ(4, i_block.size());
     EXPECT_DOUBLE_EQ(0.025, i_block[0]);
     EXPECT_DOUBLE_EQ(0.075, i_block[1]);

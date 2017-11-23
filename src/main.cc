@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
     exportVector("x", x, mp);
 
     std::cout << "Generating t values" << std::endl;
-    std::vector<double> t = getTimeIntervals(grid_params.T, grid_params.M, mp);
+    std::vector<double> t = getTimeIntervals(grid_params.T, grid_params.M, -mp);
     std::cout << "Done, t values size: " << t.size() << std::endl;
     exportVector("t", t, mp);
 
