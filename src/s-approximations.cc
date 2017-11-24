@@ -14,7 +14,7 @@ std::vector<double> _get_F(
         double K_m,
         std::vector<double> S_k,
         std::vector<double> y,
-        std::vector<int> alpha,
+        std::vector<double> alpha,
         std::vector<double> f
 ) {
     std::vector<double> F;
@@ -77,7 +77,7 @@ std::vector<double> _get_new_y(
         std::vector<double> a,
         std::vector<double> b,
         std::vector<double> c,
-        std::vector<int> alpha,
+        std::vector<double> alpha,
         std::vector<double> f,
         double t_step,
         double V_max,
@@ -112,7 +112,7 @@ std::vector<double> getApproximateSkHalf(
         std::vector<double> S_k,
         std::vector<double> D_s,
         std::vector<double> x,
-        std::vector<int> alpha,
+        std::vector<double> alpha,
         std::vector<double> f,
         double t_step,
         double V_max,

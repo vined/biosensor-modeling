@@ -18,6 +18,7 @@ double getAllowedError(std::vector<double> y, double delta);
 double getMidVal(std::vector<double> v, int i, bool up);
 
 // Vector utils
+std::vector<double> getVectorWithValue(int n, double value);
 std::vector<double> getZeroVector(int n);
 std::vector<double> slice(int from, int to, std::vector<double> vec);
 std::vector<double> negateVector(std::vector<double> vec);

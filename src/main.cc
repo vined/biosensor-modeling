@@ -1,12 +1,15 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <utility>
 
 #include "values-net.h"
 #include "machine-precision.h"
 #include "time-intervals.h"
+#include "approximations-utils.h"
 #include "output-utils.h"
 #include "parameters-utils.h"
+#include "approximations.h"
 
 
 #define ARG_COUNT 1+5+10
@@ -95,7 +98,8 @@ int main(int argc, char *argv[]) {
     values_net_params field_params = getNonLinearValuesNetParams(grid_params.d_e, grid_params.d_m, grid_params.N_b);
     std::cout << "q: " << field_params.q << std::endl;
     std::vector<double> x = generateNonLinearValuesNet(field_params);
-    std::cout << "Done, x values size: " << x.size() << std::endl;
+    int n = x.size();
+    std::cout << "Done, x values size: " << n << std::endl;
     exportVector("x", x, mp);
 
     std::cout << "Generating t values" << std::endl;
@@ -103,7 +107,43 @@ int main(int argc, char *argv[]) {
     std::cout << "Done, t values size: " << t.size() << std::endl;
     exportVector("t", t, mp);
 
-    // Todo create D_s, D_p, alpha, f (0), g(0), q
+
+    std::cout << "Generating f, g values" << std::endl;
+    std::vector<double> f = getZeroVector(n);
+    std::vector<double> g = f;
+
+    std::cout << "Generating alpha, D_s, D_p values" << std::endl;
+    std::pair<int, int> de_dm_lengths = get_de_dm_segments_lengths(field_params);
+    std::vector<double> alpha = get_alpha(de_dm_lengths.first, de_dm_lengths.second);
+    exportVector("alpha", alpha, mp);
+
+    std::vector<double> D_s = get_D(alpha, model_params.Dse, model_params.Dsm);
+    exportVector("D_s", D_s, mp);
+    std::vector<double> D_p = get_D(alpha, model_params.Dpe, model_params.Dpm);
+    exportVector("D_p", D_p, mp);
+
+
+    std::cout << "Approximating I" << std::endl;
+    I_approximation_result = approximate_I(
+            x,
+            t,
+            D_s,
+            D_p,
+            alpha,
+            f,
+            g,
+            model_params.S0,
+            model_params.Vmax,
+            model_params.Km,
+            model_params.C1,
+            model_params.C2,
+            model_params.ne,
+            field_params.q,
+            delta
+    );
+    
+    std::cout << "I approximation finished, exporting results..." << std::endl;
+
     return 0;
 }
 

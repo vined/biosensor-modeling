@@ -10,12 +10,12 @@
 
 #define F 96485.3365 // Faraday constant (C/mol)
 
-void approximate_I(
+I_approximation_result approximate_I(
         std::vector<double> x,
         std::vector<double> t,
         std::vector<double> D_s,
         std::vector<double> D_p,
-        std::vector<int> alpha,
+        std::vector<double> alpha,
         std::vector<double> f,
         std::vector<double> g,
         double S_0,
@@ -69,5 +69,5 @@ void approximate_I(
         );
     }
 
-    return;
+    return I_approximation_result(I, S, P);
 }

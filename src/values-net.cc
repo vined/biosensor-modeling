@@ -1,6 +1,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <utility>
 
 #include "exponent-intervals.h"
 #include "values-range.h"
@@ -104,3 +105,12 @@ vector<double> generateNonLinearValuesNet(values_net_params params) {
     return values_net;
 }
 
+pair<int, int> get_de_dm_segments_lengths(values_net_params params) {
+    int segment_length = params.N_i*2;
+
+    if (params.d_e < params.d_m) {
+        return pair<int, int> (segment_length, segment_length + params.N_theta);
+    } else {
+        return pair<int, int>(segment_length + params.N_theta, segment_length);
+    }
+};

@@ -22,3 +22,5 @@ vector<double> _get_steps(values_net_params params);
 
 values_net_params getNonLinearValuesNetParams(double d_e, double d_m, int N_b);
 vector<double> generateNonLinearValuesNet(values_net_params params);
+
+pair<int, int> get_de_dm_segments_lengths(values_net_params params);

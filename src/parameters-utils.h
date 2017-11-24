@@ -3,6 +3,7 @@
 
 #endif //BIOSENSOR_MODELING_PARAMETERS_UTILS_H
 
+#include <cmath>
 
 struct grid_parameters {
     // Width of bio-sensor parts widths
@@ -15,8 +16,8 @@ struct grid_parameters {
 
     grid_parameters() {}
     grid_parameters(double _d_e, double _d_m, int _N_b, int _T, int _M) {
-        d_e = _d_e;
-        d_m = _d_m;
+        d_e = _d_e * pow(10, -6);
+        d_m = _d_m * pow(10, -6);
         N_b = _N_b;
         T = _T;
         M = _M;
@@ -62,10 +63,10 @@ struct model_parameters {
             double _S0,
             unsigned _ne
     ) {
-        Dse = _Dse;
-        Dsm = _Dsm;
-        Dpe = _Dpe;
-        Dpm = _Dpm;
+        Dse = _Dse * pow(10, -12);
+        Dsm = _Dsm * pow(10, -12);
+        Dpe = _Dpe * pow(10, -12);
+        Dpm = _Dpm * pow(10, -12);
         C1 = _C1;
         C2 = _C2;
         Vmax = _Vmax;
@@ -93,3 +94,6 @@ struct model_parameters {
 
 model_parameters getDemoModelParameters();
 model_parameters parseModelParameters(int argc, char *argv[]);
+
+std::vector<double> get_alpha(int de_length, int dm_length);
+std::vector<double> get_D(std::vector<double> alpha, double D_e, double D_m);

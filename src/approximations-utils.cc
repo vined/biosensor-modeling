@@ -62,14 +62,18 @@ double getMidVal(std::vector<double> v, int i, bool up) {
     return (v_i + v_i_half) / 2;
 }
 
-std::vector<double> getZeroVector(int n) {
-    std::vector<double> d(n);
+std::vector<double> getVectorWithValue(int n, double value) {
+    std::vector<double> d;
 
     for (int i = 0; i < n; i++) {
-        d[i] = 0.0;
+        d.push_back(value);
     }
 
     return d;
+}
+
+std::vector<double> getZeroVector(int n) {
+    return getVectorWithValue(n, 0.0);
 }
 
 std::vector<double> slice(int from, int to, std::vector<double> vec) {

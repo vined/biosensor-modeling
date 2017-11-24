@@ -1,7 +1,9 @@
 #include <fstream>
 #include <stdlib.h>
+#include <vector>
 
 
+#include "approximations-utils.h"
 #include "parameters-utils.h"
 
 // DEMO parameters
@@ -9,29 +11,15 @@ grid_parameters getDemoGridParameters() {
     return grid_parameters
             (
                     //Grid parameters
-                    4.0, // d_e
-                    5.0, // d_m
-                    1000, // N_b
+                    4, // d_e
+                    5, // d_m
+                    100, // N_b
                     1000, // T
-                    1000000 // M
+                    1000 // M
             );
 }
 
 model_parameters getDemoModelParameters() {
-//    char argv[][] = {
-//            //Model parameters
-//            "22", //Dse
-//            "7", //Dsm
-//            "20", //Dpe
-//            "6", //Dpm
-//            "0", //C1
-//            "0", //C2
-//            "0.3", //Vmax
-//            "0.23", //Km
-//            "0.07", //S0
-//            "1" //ne
-//    };
-//    return parseModelParameters(0, argv);
     return model_parameters
             (
                     //Model parameters
@@ -72,9 +60,33 @@ model_parameters parseModelParameters(int argc, char *argv[]) {
                     atof(argv[9]), //Dpm
                     atof(argv[10]), //C1
                     atof(argv[11]), //C2
-                    atof(argv[12]), //Vmax Todo convert
-                    atof(argv[13]), //Km Todo convert
-                    atof(argv[14]), //S0 Todo convert
+                    atof(argv[12]), //Vmax
+                    atof(argv[13]), //Km
+                    atof(argv[14]), //S0
                     atoi(argv[15])  //ne
             );
+}
+
+std::vector<double> get_alpha(int de_length, int dm_length) {
+
+    std::vector<double> result = getVectorWithValue(de_length, 1.0);
+    std::vector<double> de = getVectorWithValue(dm_length, 0.0);
+
+    result.insert(result.end(), de.begin(), de.end());
+    return result;
+}
+
+std::vector<double> get_D(std::vector<double> alpha, double D_e, double D_m) {
+
+    std::vector<double> D;
+
+    for(double a: alpha) {
+        if (a > 0.0) {
+            D.push_back(D_e);
+        } else {
+            D.push_back(D_m);
+        }
+    }
+
+    return D;
 }
