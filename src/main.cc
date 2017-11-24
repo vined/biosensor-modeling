@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
     exportVector("D_p", D_p, mp);
 
 
-    std::cout << "Approximating I" << std::endl;
+    std::cout << "Approximating I..." << std::endl;
     I_approximation_result result = approximate_I(
             x,
             t,
@@ -144,6 +144,9 @@ int main(int argc, char *argv[]) {
 
     std::cout << "I approximation finished, exporting results..." << std::endl;
     std::cout << "I size: " << result.I.size() << std::endl;
+
+    exportVector("S", result.S[result.S.size()-1], mp);
+    exportVector("P", result.P[result.P.size()-1], mp);
     exportVector("I", result.I, mp);
 
     return 0;

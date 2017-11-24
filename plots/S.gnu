@@ -1,0 +1,1 @@
+plot "out/S.dat"
