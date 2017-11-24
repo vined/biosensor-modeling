@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
 
 
     std::cout << "Approximating I" << std::endl;
-    I_approximation_result = approximate_I(
+    I_approximation_result result = approximate_I(
             x,
             t,
             D_s,
@@ -141,8 +141,10 @@ int main(int argc, char *argv[]) {
             field_params.q,
             delta
     );
-    
+
     std::cout << "I approximation finished, exporting results..." << std::endl;
+    std::cout << "I size: " << result.I.size() << std::endl;
+    exportVector("I", result.I, mp);
 
     return 0;
 }
