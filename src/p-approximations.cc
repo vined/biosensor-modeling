@@ -22,7 +22,7 @@ std::vector<double> _get_G(
 
     for (int i = 1; i < P_k.size() - 2; i++) {
         G.push_back(
-                (2 * P_k[i] / t_step) + ( (alpha[i] * V_max * S_k_half[i]) / (K_m + S_k_half[i]) ) + getMidVal(g, i, true)
+                (2 * P_k[i] / t_step) + ( (alpha[i] * V_max * S_k_half[i]) / (K_m + S_k_half[i]) ) + g[i] // g[k+1/2]?
         );
     }
 
@@ -52,10 +52,11 @@ std::vector<double> _get_new_approximations(
 
     std::vector<double> P_k_half;
     int N = P_k.size()-1;
-
     double P_n = _get_P_n(B, Y, q);
 
-    for (int i = 0; i < N-1; i++) {
+    P_k_half.push_back(0.0);
+
+    for (int i = 1; i < N-1; i++) {
         P_k_half.push_back(
                 P_n * B[i] + Y[i]
         );

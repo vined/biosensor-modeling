@@ -9,11 +9,12 @@
 void printVector(std::vector<double> vect, int max) {
     int i = 0;
     for (double val : vect) {
-        if (i > max)
+        if (max != 0 && i > max)
             return;
-        std::cout << val << std::endl;
+        std::cout << val << ",";
         i++;
    }
+    std::cout << std::endl;
 }
 
 void exportVector(std::string name, std::vector<double> vect, int precision) {

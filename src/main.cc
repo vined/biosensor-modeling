@@ -144,9 +144,32 @@ int main(int argc, char *argv[]) {
 
     std::cout << "I approximation finished, exporting results..." << std::endl;
     std::cout << "I size: " << result.I.size() << std::endl;
+    std::cout << "S size: " << result.S.size() << std::endl;
+    std::cout << "P size: " << result.P.size() << std::endl;
 
-    exportVector("S", result.S[result.S.size()-1], mp);
-    exportVector("P", result.P[result.P.size()-1], mp);
+    std::vector<double> first_S = result.S[0];
+    std::cout << "first S size: " << first_S.size() << std::endl;
+    std::vector<double> S2 = result.S[1];
+    std::cout << "S2 size: " << S2.size() << std::endl;
+    std::vector<double> S3 = result.S[2];
+    std::cout << "S3 size: " << S3.size() << std::endl;
+
+    std::vector<double> last_S = result.S[result.S.size()-1];
+    std::cout << "last S size: " << last_S.size() << std::endl;
+
+    std::vector<double> first_P = result.P[0];
+    std::cout << "first P size: " << first_P.size() << std::endl;
+    std::vector<double> last_P = result.P[result.P.size()-1];
+    std::cout << "last P size: " << last_P.size() << std::endl;
+
+    exportVector("S1", first_S, mp);
+    exportVector("S2", S2, mp);
+    exportVector("S3", S3, mp);
+
+    exportVector("P1", first_P, mp);
+
+    exportVector("S", last_S, mp);
+    exportVector("P", last_P, mp);
     exportVector("I", result.I, mp);
 
     return 0;

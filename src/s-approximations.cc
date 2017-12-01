@@ -1,9 +1,11 @@
 #include <cmath>
+#include <iostream>
 #include <vector>
 #include <algorithm>
 
 #include "s-approximations.h"
 #include "approximations-utils.h"
+#include "output-utils.h"
 
 
 #define MAX_ITERATIONS 1000
@@ -19,12 +21,11 @@ std::vector<double> _get_F(
 ) {
     std::vector<double> F;
 
-    for (int i = 1; i < y.size() - 2; i++) {
+    for (unsigned i = 1; i < y.size() - 1; i++) {
         F.push_back(
-                (2 * S_k[i] / t_step) - ( (alpha[i] * V_max * y[i]) / (K_m + y[i]) ) + getMidVal(f, i, true)
+                (2 * S_k[i] / t_step) - ( (alpha[i] * V_max * y[i]) / (K_m + y[i]) ) + f[i] // f[k+1/2]?
         );
     }
-
     return F;
 }
 
@@ -48,7 +49,6 @@ std::vector<double> _get_new_approximations(
         std::vector<double> A,
         std::vector<double> B,
         std::vector<double> Y,
-        double t_step,
         double q,
         double delta
 ) {
@@ -60,7 +60,7 @@ std::vector<double> _get_new_approximations(
     double y0 = _get_new_y_0(A, B, Y, S_0, q);
 
     y_new.push_back(y0);
-    for (int i = 1; i < N-1; i++) {
+    for (int i = 1; i < N; i++) {
         y_new.push_back(
                 y0 * A[i] + S_0 * B[i] + Y[i]
         );
@@ -91,21 +91,28 @@ std::vector<double> _get_new_y(
     std::vector<double> A;
     std::vector<double> B;
     std::vector<double> Y;
-    A.push_back(1);
-    B.push_back(0);
-    Y.push_back(0);
+    A.push_back(1.0);
+    B.push_back(0.0);
+    Y.push_back(0.0);
 
-    std::vector<double> tmp_AB = solveTridiagonalMatrix(a, c, b, getZeroVector(b.size()));
-    std::vector<double> tmp_Y = solveTridiagonalMatrix(a, c, b, negateVector(F));
+    // Problem - resolves to 0
+    std::vector<double> tmp_AB = solveTridiagonalThomasMatrix(a, c, b, getZeroVector(b.size()));
+    std::vector<double> tmp_Y = solveTridiagonalThomasMatrix(a, c, b, negateVector(F));
+
+    std::cout << "tmp_AB:" << std::endl;
+    printVector(tmp_AB, 0);
+
+    std::cout << "tmp_Y:" << std::endl;
+    printVector(tmp_Y, 0);
 
     A.insert(A.end(), tmp_AB.begin(), tmp_AB.end());
     B.insert(B.end(), tmp_AB.begin(), tmp_AB.end());
     Y.insert(Y.end(), tmp_Y.begin(), tmp_Y.end());
-    A.push_back(0);
-    B.push_back(1);
-    Y.push_back(0);
+    A.push_back(0.0);
+    B.push_back(1.0);
+    Y.push_back(0.0);
 
-    return _get_new_approximations(S_k, y_old, A, B, Y, t_step, q, delta);
+    return _get_new_approximations(S_k, y_old, A, B, Y, q, delta);
 }
 
 std::vector<double> getApproximateSkHalf(
@@ -127,7 +134,7 @@ std::vector<double> getApproximateSkHalf(
 
     std::vector<double> a = get_a(D_s, x);
     std::vector<double> b = get_b(D_s, x);
-    std::vector<double> c = get_c(t_step, C1, a, b);
+    std::vector<double> c = negateVector(get_c(t_step, C1, a, b));
 
     double progress = 0;
     double residual = 0;
@@ -136,20 +143,27 @@ std::vector<double> getApproximateSkHalf(
 
 
     do {
-        if (i > MAX_ITERATIONS) {
+//        if (i > MAX_ITERATIONS) {
+        if (i > 3) {
             throw 100;
         }
         i++;
 
         y_new = _get_new_y(S_k, y_old, x, a, b, c, alpha, f, t_step, V_max, K_m, C1, q, delta);
-        std::vector<double> F_new = _get_F(t_step, V_max, K_m, S_k, y_old, alpha, f);
+        std::cout << "y_new:" << std::endl;
+        printVector(y_new, 0);
+
+        std::vector<double> F_new = _get_F(t_step, V_max, K_m, S_k, y_new, alpha, f);
 
         progress = getProgress(y_new, y_old);
         residual = getResidual(y_new, a, b, c, F_new);
         allowed_error = getAllowedError(y_new, delta);
         y_old = y_new;
 
-    } while (allowed_error > progress && allowed_error > residual);
+        std::cout << i << " progress " << progress << " residual " << residual << " allowed_error " << allowed_error << std::endl;
+        std::cout << std::endl;
+
+    } while (allowed_error < progress || allowed_error < residual);
 
     return y_new;
 }

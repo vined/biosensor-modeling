@@ -1,6 +1,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 #include "approximations-utils.h"
 #include "s-approximations.h"
@@ -47,27 +48,35 @@ I_approximation_result approximate_I(
     P.push_back(P_k);
 
     for (int i = 1; i < t.size()-1; i++) {
+        std::cout << ".";
         double t_step = t[i+1] - t[i];
 
         // Approximate S
         std::vector<double> S_k_half = getApproximateSkHalf(S_k, D_s, x, alpha, f, t_step, V_max, K_m, C1, q, delta);
         std::vector<double> S_i = getNextFromHalfValues(S_k, S_k_half);
+        S_i.at(S_i.size()-1) = S_0;
 
         S.push_back(S_i);
         S_k = S_i;
 
+        std::cout << ".";
+
         // Approximate P
         std::vector<double> P_k_half = getApproximatePkHalf(P_k, S_k_half, D_p, x, alpha, g, t_step, V_max, K_m, C2, q);
         std::vector<double> P_i = getNextFromHalfValues(P_k, P_k_half);
+        P_i.at(0) = 0.0;
 
         P.push_back(P_i);
         P_k = P_i;
+
+        std::cout << "-";
 
         // Calculate current near electrode
         I.push_back(
                 n_e * F * D_p[0] * ( - (p0 * P_k[0]) + (p1 * P_k[1]) - (p2 * P_k[2]) )
         );
     }
+    std::cout << std::endl;
 
     return I_approximation_result(I, S, P);
 }

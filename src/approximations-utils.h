@@ -50,3 +50,10 @@ std::vector<double> solveTridiagonalMatrix(
         std::vector<double> du,
         std::vector<double> b
 );
+
+std::vector<double> solveTridiagonalThomasMatrix(
+        std::vector<double> a,
+        std::vector<double> b,
+        std::vector<double> c,
+        std::vector<double> d
+);

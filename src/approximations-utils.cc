@@ -1,6 +1,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 #include "../lib/lapacke.h"
 
@@ -30,12 +31,12 @@ double getResidual(
 ) {
 
     double max_residual = 0;
-    // from i to N - 1, not taking first and last element
-    for (unsigned i = 1; i < y.size() - 1; i++) {
+    for (unsigned i = 0; i < a.size(); i++) {
+        unsigned yi = i + 1;
 
         double values[4] = {fabs(a[i]), fabs(b[i]), fabs(c[i]), fabs(F[i])};
         double *m = std::max_element(std::begin(values), std::end(values));
-        double res = a[i] * y[i - 1] - c[i] * y[i] + b[i] * y[i + 1] + F[i];
+        double res = a[i] * y[yi - 1] - c[i] * y[yi] + b[i] * y[yi + 1] + F[i];
         double residual = abs(res) / *m;
 
         if (residual > max_residual) {
@@ -59,7 +60,7 @@ double getMidVal(std::vector<double> v, int i, bool up) {
     } else {
         v_i_half = v[i - 1];
     }
-    return (v_i + v_i_half) / 2;
+    return (v_i + v_i_half) / 2.0;
 }
 
 std::vector<double> getVectorWithValue(int n, double value) {
@@ -104,7 +105,7 @@ std::vector<double> getNextFromHalfValues(
 
     for (unsigned i = 0; i < prev.size(); i++) {
         result.push_back(
-                2 * y[i] - prev[i]
+                2.0 * y[i] - prev[i]
         );
     }
 
@@ -120,7 +121,7 @@ std::vector<double> get_a(
     for (unsigned i = 1; i < x.size() - 1; i++) {
         double h = x[i] - x[i - 1];
         a.push_back(
-                (2 * getMidVal(D, i, false)) / (h * (x[i + 1] - x[i - 1]))
+                (2.0 * getMidVal(D, i, false)) / (h * (x[i + 1] - x[i - 1]))
         );
     }
 
@@ -136,7 +137,7 @@ std::vector<double> get_b(
     for (unsigned i = 1; i < x.size() - 1; i++) {
         double h = x[i + 1] - x[i];
         b.push_back(
-                (2 * getMidVal(D, i, true)) / (h * (x[i + 1] - x[i - 1]))
+                (2.0 * getMidVal(D, i, true)) / (h * (x[i + 1] - x[i - 1]))
         );
     }
 
@@ -153,11 +154,51 @@ std::vector<double> get_c(
 
     for (unsigned i = 0; i < a.size(); i++) {
         c.push_back(
-                a[i] + b[i] + C + (2 / t_step)
+                a[i] + b[i] + C + (2.0 / t_step)
         );
     }
 
     return c;
+}
+
+std::vector<double> solveTridiagonalThomasMatrix(
+        std::vector<double> a,
+        std::vector<double> b,
+        std::vector<double> c,
+        std::vector<double> d
+) {
+    std::vector<double> _c;
+    std::vector<double> _d;
+    std::vector<double> x;
+
+    double _ci = c[0] / b[0];
+    double _di = d[0] / b[0];
+
+    _c.push_back(_ci);
+    _d.push_back(_di);
+
+    for (unsigned i = 1; i < a.size(); i++) {
+        _di = (d[i] - a[i] * _di) / (b[i] - a[i] * _ci);
+        _ci = c[i] / (b[i] - a[i] * _ci);
+
+        _d.push_back(_di);
+        if (i == a.size() - 1) {
+            _c.push_back(0.0);
+        } else {
+            _c.push_back(_ci);
+        }
+    }
+
+    double xi = _di;
+    x.push_back(xi);
+    for (int i = _d.size() - 2; i >= 0; i--) {
+        xi = _d[i] - _c[i] * xi;
+        x.push_back(xi);
+    }
+
+    std::vector<double> rev_x(x.size());
+    std::reverse_copy(x.begin(), x.end(), rev_x.begin());
+    return rev_x;
 }
 
 std::vector<double> solveTridiagonalMatrix(

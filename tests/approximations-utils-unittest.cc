@@ -109,13 +109,29 @@ TEST(ApproximationsUtilsTest, Get_c) {
 
 TEST(ApproximationsUtilsTest, SolveTridiagonalMatrix) {
 
-    std::vector<double> dl {1, 1, 1, 1, 5};
-    std::vector<double> d  {2, 2, 2, 2, 2};
-    std::vector<double> du {5, 1, 1, 1, 1};
-    std::vector<double> b  {1, 2, 3, 4, 5};
-    std::vector<double> actual = solveTridiagonalMatrix(dl, d, du, b);
+    std::vector<double> a {0.0, 3.4, 3.6, 7.0, -6.0};
+    std::vector<double> b {3.0, 2.3, -5.0, -0.9, 7.1};
+    std::vector<double> c {2.1, -1.0, 1.9, 8.0, 0.0};
+    std::vector<double> d {2.7, -0.5, 2.6, 0.6, 2.7};
+    std::vector<double> actual = solveTridiagonalMatrix(a, b, c, d);
 
-    std::vector<double> expected = {0.5, 0.0, 1.5, 0.0, 2.5};
+    std::vector<double> expected = {-4.0, 7.0, 3.0, -4.0, -3.0};
+
+    ASSERT_EQ(actual.size(), expected.size());
+    for (unsigned i = 0; i < actual.size(); i++) {
+        EXPECT_NEAR(actual[i], expected[i], 1e-8);
+    }
+}
+
+TEST(ApproximationsUtilsTest, SolveTridiagonalThomasMatrix2) {
+
+    std::vector<double> a {0.0, 3.4, 3.6, 7.0, -6.0};
+    std::vector<double> b {3.0, 2.3, -5.0, -0.9, 7.1};
+    std::vector<double> c {2.1, -1.0, 1.9, 8.0, 0.0};
+    std::vector<double> d {2.7, -0.5, 2.6, 0.6, 2.7};
+    std::vector<double> actual = solveTridiagonalThomasMatrix(a, b, c, d);
+
+    std::vector<double> expected = {-4.0, 7.0, 3.0, -4.0, -3.0};
 
     ASSERT_EQ(actual.size(), expected.size());
     for (unsigned i = 0; i < actual.size(); i++) {
