@@ -85,18 +85,21 @@ std::vector<double> getApproximatePkHalf(
     std::vector<double> c = get_c(t_step, C2, a, b);
     std::vector<double> G = _get_G(t_step, V_max, K_m, P_k, S_k_half, alpha, g);
 
-    std::vector<double> B;
-    std::vector<double> Y;
-    B.push_back(0);
-    Y.push_back(0);
+//    std::vector<double> B;
+//    std::vector<double> Y;
+//    B.push_back(0);
+//    Y.push_back(0);
+//
+//    std::vector<double> tmp_B = solveTridiagonalMatrix(a, c, b, getZeroVector(b.size()));
+//    std::vector<double> tmp_Y = solveTridiagonalMatrix(a, c, b, negateVector(G));
+//
+//    B.insert(B.end(), tmp_B.begin(), tmp_B.end());
+//    Y.insert(Y.end(), tmp_Y.begin(), tmp_Y.end());
+//    B.push_back(1);
+//    Y.push_back(0);
 
-    std::vector<double> tmp_B = solveTridiagonalMatrix(a, c, b, getZeroVector(b.size()));
-    std::vector<double> tmp_Y = solveTridiagonalMatrix(a, c, b, negateVector(G));
-
-    B.insert(B.end(), tmp_B.begin(), tmp_B.end());
-    Y.insert(Y.end(), tmp_Y.begin(), tmp_Y.end());
-    B.push_back(1);
-    Y.push_back(0);
+    std::vector<double> B = solveCustomisedTridiagonalThomasMatrix3(a, b, c, getZeroVector(a.size()), 0.0, 1.0);
+    std::vector<double> Y = solveCustomisedTridiagonalThomasMatrix3(a, b, c, G, 0.0, 0.0);
 
     return _get_new_approximations(P_k, B, Y, q);
 }

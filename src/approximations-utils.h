@@ -57,3 +57,32 @@ std::vector<double> solveTridiagonalThomasMatrix(
         std::vector<double> c,
         std::vector<double> d
 );
+
+std::vector<double> solveCustomisedTridiagonalThomasMatrix(
+        std::vector<double> a,
+        std::vector<double> b,
+        std::vector<double> c,
+        std::vector<double> F,
+        double kappa1,
+        double gamma1,
+        double y_0,
+        double y_N
+);
+
+std::vector<double> solveCustomisedTridiagonalThomasMatrix2(
+        std::vector<double> a,
+        std::vector<double> b,
+        std::vector<double> c,
+        std::vector<double> F,
+        double gamma1,
+        double gamma2
+);
+
+std::vector<double> solveCustomisedTridiagonalThomasMatrix3(
+        std::vector<double> a,
+        std::vector<double> b,
+        std::vector<double> c,
+        std::vector<double> F,
+        double gamma1,
+        double gamma2
+);

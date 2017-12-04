@@ -7,6 +7,7 @@
 #include "s-approximations.h"
 #include "p-approximations.h"
 #include "approximations.h"
+#include "output-utils.h"
 
 
 #define F 96485.3365 // Faraday constant (C/mol)
@@ -48,6 +49,7 @@ I_approximation_result approximate_I(
     P.push_back(P_k);
 
     for (int i = 1; i < t.size()-1; i++) {
+//    for (int i = 1; i < 5; i++) {
         std::cout << ".";
         double t_step = t[i+1] - t[i];
 
@@ -55,6 +57,12 @@ I_approximation_result approximate_I(
         std::vector<double> S_k_half = getApproximateSkHalf(S_k, D_s, x, alpha, f, t_step, V_max, K_m, C1, q, delta);
         std::vector<double> S_i = getNextFromHalfValues(S_k, S_k_half);
         S_i.at(S_i.size()-1) = S_0;
+
+//        std::cout << "S_i:" << std::endl;
+//        printVector(S_i, 0);
+//        std::cout << std::endl;
+//
+//        exportVector("S_", S_i, 15);
 
         S.push_back(S_i);
         S_k = S_i;
@@ -70,6 +78,7 @@ I_approximation_result approximate_I(
         P_k = P_i;
 
         std::cout << "-";
+//        std::cout << std::endl;
 
         // Calculate current near electrode
         I.push_back(

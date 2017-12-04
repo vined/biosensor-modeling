@@ -42,11 +42,11 @@ vector<double> getTimeIntervals(int T, int M, int mp) {
     int m = floor( log2( tau/tau_min ));
 
     // Interval starts with zero
-//    vector<double> start = _get_non_linear_interval(m, tau);
+    vector<double> start = _get_non_linear_interval(m, tau);
     vector<double> end = _get_linear_interval(M, tau);
     vector<double> result = {0.0};
 
-//    result.insert(result.end(), start.begin(), start.end());
+    result.insert(result.end(), start.begin(), start.end());
     result.insert(result.end(), end.begin(), end.end());
     return result;
 }

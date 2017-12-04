@@ -22,7 +22,7 @@ TEST(ApproximationsUtilsTest, GetResidualTest) {
     std::vector<double> b {99, 1, 2, 3, 99};
     std::vector<double> c {99, 1, 2, -3, 99};
     std::vector<double> F {99, 1, 2, -5, 99};
-    EXPECT_DOUBLE_EQ(6.2, getResidual(y, a, b, c, F));
+    EXPECT_DOUBLE_EQ(6.0005, getResidual(y, a, b, c, F));
 }
 
 TEST(ApproximationsTest, GetAllowdErrorTest) {
@@ -123,15 +123,98 @@ TEST(ApproximationsUtilsTest, SolveTridiagonalMatrix) {
     }
 }
 
-TEST(ApproximationsUtilsTest, SolveTridiagonalThomasMatrix2) {
+TEST(ApproximationsUtilsTest, SolveTridiagonalMatrix10) {
 
-    std::vector<double> a {0.0, 3.4, 3.6, 7.0, -6.0};
-    std::vector<double> b {3.0, 2.3, -5.0, -0.9, 7.1};
-    std::vector<double> c {2.1, -1.0, 1.9, 8.0, 0.0};
-    std::vector<double> d {2.7, -0.5, 2.6, 0.6, 2.7};
-    std::vector<double> actual = solveTridiagonalThomasMatrix(a, b, c, d);
+    std::vector<double> a {0.0, 3.4, 3.6, 7.0, 0.0};
+    std::vector<double> b {0.0, -1.0, 1.9, 8.0, 0.0};
+    std::vector<double> c {1.0, 2.3, -5.0, -0.9, 1.0};
+    std::vector<double> d {1.0, -0.5, 2.6, 0.6, 0.0};
+    std::vector<double> actual = solveTridiagonalMatrix(a, c, b, d);
 
-    std::vector<double> expected = {-4.0, 7.0, 3.0, -4.0, -3.0};
+    std::vector<double> expected = {1.0, -1.3134582623509368, 0.87904599659284499, 6.1703577512776837, 0.0};
+
+    ASSERT_EQ(actual.size(), expected.size());
+    for (unsigned i = 0; i < actual.size(); i++) {
+        EXPECT_NEAR(actual[i], expected[i], 1e-8);
+    }
+}
+
+TEST(ApproximationsUtilsTest, SolveTridiagonalMatrix01) {
+
+    std::vector<double> a {0.0, 3.4, 3.6, 7.0, 0.0};
+    std::vector<double> b {0.0, -1.0, 1.9, 8.0, 0.0};
+    std::vector<double> c {1.0, 2.3, -5.0, -0.9, 1.0};
+    std::vector<double> d {0.0, -0.5, 2.6, 0.6, 1.0};
+    std::vector<double> actual = solveTridiagonalMatrix(a, c, b, d);
+
+    std::vector<double> expected = {0.0, -0.6865417376490629, -1.0790459965928449, -0.17035775127768296, 1.0};
+
+    ASSERT_EQ(actual.size(), expected.size());
+    for (unsigned i = 0; i < actual.size(); i++) {
+        EXPECT_NEAR(actual[i], expected[i], 1e-8);
+    }
+}
+
+TEST(ApproximationsUtilsTest, SolveTridiagonalMatrix00) {
+
+    std::vector<double> a {0.0, 3.4, 3.6, 7.0, 0.0};
+    std::vector<double> b {0.0, -1.0, 1.9, 8.0, 0.0};
+    std::vector<double> c {1.0, 2.3, -5.0, -0.9, 1.0};
+    std::vector<double> d {0.0, -0.5, 2.6, 0.6, 0.0};
+    std::vector<double> actual = solveTridiagonalMatrix(a, c, b, d);
+
+    std::vector<double> expected = {0.0, -0.039182282793866915, 0.4098807495741057, 2.5212947189097106, 0.0};
+
+    ASSERT_EQ(actual.size(), expected.size());
+    for (unsigned i = 0; i < actual.size(); i++) {
+        EXPECT_NEAR(actual[i], expected[i], 1e-8);
+    }
+}
+
+TEST(ApproximationsUtilsTest, solveCustomisedTridiagonalThomasMatrix10) {
+
+    std::vector<double> a {3.4, 3.6, 7.0};
+    std::vector<double> b {-1.0, 1.9, 8.0};
+    std::vector<double> c {2.3, -5.0, -0.9};
+    std::vector<double> d {-0.5, 2.6, 0.6};
+//    std::vector<double> actual = solveCustomisedTridiagonalThomasMatrix3(a, b, c, negateVector(d), 1.0, 0.0);
+    std::vector<double> actual = solveCustomisedTridiagonalThomasMatrix2(a, b, c, d, 1.0, 0.0);
+
+    std::vector<double> expected = {1.0, -1.3134582623509368, 0.87904599659284499, 6.1703577512776837, 0.0};
+
+    ASSERT_EQ(actual.size(), expected.size());
+    for (unsigned i = 0; i < actual.size(); i++) {
+        EXPECT_NEAR(actual[i], expected[i], 1e-8);
+    }
+}
+
+TEST(ApproximationsUtilsTest, solveCustomisedTridiagonalThomasMatrix01) {
+
+    std::vector<double> a {3.4, 3.6, 7.0};
+    std::vector<double> b {-1.0, 1.9, 8.0};
+    std::vector<double> c {2.3, -5.0, -0.9};
+    std::vector<double> d {-0.5, 2.6, 0.6};
+    //    std::vector<double> actual = solveCustomisedTridiagonalThomasMatrix(a, b, c, negateVector(d), 0.0, 0.0, 1.0, 0.0);
+    std::vector<double> actual = solveCustomisedTridiagonalThomasMatrix2(a, b, c, d, 0.0, 1.0);
+
+    std::vector<double> expected = {0.0, -0.6865417376490629, -1.0790459965928449, -0.17035775127768296, 1.0};
+
+    ASSERT_EQ(actual.size(), expected.size());
+    for (unsigned i = 0; i < actual.size(); i++) {
+        EXPECT_NEAR(actual[i], expected[i], 1e-8);
+    }
+}
+
+TEST(ApproximationsUtilsTest, solveCustomisedTridiagonalThomasMatrix00) {
+
+    std::vector<double> a {3.4, 3.6, 7.0};
+    std::vector<double> b {-1.0, 1.9, 8.0};
+    std::vector<double> c {2.3, -5.0, -0.9};
+    std::vector<double> d {-0.5, 2.6, 0.6};
+    //    std::vector<double> actual = solveCustomisedTridiagonalThomasMatrix(a, b, c, negateVector(d), 0.0, 0.0, 1.0, 0.0);
+    std::vector<double> actual = solveCustomisedTridiagonalThomasMatrix2(a, b, c, d, 0.0, 0.0);
+
+    std::vector<double> expected = {0.0, -0.039182282793866915, 0.4098807495741057, 2.5212947189097106, 0.0};
 
     ASSERT_EQ(actual.size(), expected.size());
     for (unsigned i = 0; i < actual.size(); i++) {
