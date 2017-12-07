@@ -42,11 +42,11 @@ static void show_usage() {
             << "\tS0 \t\tInitial substrate concentration (mol / m^3)\n"
             << "\tne \t\tCount of electric current transfering electrons in electrode\n"
 
-            << "Result is outputed into files:\n"
+            << "Result is saved into files:\n"
             << "\tx.txt \t\tBio-sensor length coordinates\n"
             << "\ty.txt \t\tTime field\n"
-            << "\tS.txt \t\tSubstrate concentration over time (mol / m^3) [2D]\n"
-            << "\tP.txt \t\tProduct concentration over time (mol / m^3) [2D]\n"
+            << "\tS.txt \t\tSubstrate concentration over time (mol / m^3)\n"
+            << "\tP.txt \t\tProduct concentration over time (mol / m^3)\n"
             << "\tI.txt \t\tCurrent near electrode over time (A / m^2)\n"
             << std::endl;
 }
@@ -122,9 +122,10 @@ int main(int argc, char *argv[]) {
     std::vector<double> D_p = get_D(alpha, model_params.Dpe, model_params.Dpm);
     exportVector("D_p", D_p, mp);
 
+    // Todo generate exponential S0
 
     std::cout << "Approximating I..." << std::endl;
-    I_approximation_result result = approximate_I(
+    std::vector<double> I = approximate_I(
             x,
             t,
             D_s,
@@ -143,34 +144,11 @@ int main(int argc, char *argv[]) {
     );
 
     std::cout << "I approximation finished, exporting results..." << std::endl;
-    std::cout << "I size: " << result.I.size() << std::endl;
-    std::cout << "S size: " << result.S.size() << std::endl;
-    std::cout << "P size: " << result.P.size() << std::endl;
+    std::cout << "I size: " << I.size() << std::endl;
 
-    std::vector<double> first_S = result.S[0];
-    std::cout << "first S size: " << first_S.size() << std::endl;
-    std::vector<double> S2 = result.S[1];
-    std::cout << "S2 size: " << S2.size() << std::endl;
-    std::vector<double> S3 = result.S[2];
-    std::cout << "S3 size: " << S3.size() << std::endl;
+    // Todo: Calculate i
 
-    std::vector<double> last_S = result.S[result.S.size()-1];
-    std::cout << "last S size: " << last_S.size() << std::endl;
-
-    std::vector<double> first_P = result.P[0];
-    std::cout << "first P size: " << first_P.size() << std::endl;
-    std::vector<double> last_P = result.P[result.P.size()-1];
-    std::cout << "last P size: " << last_P.size() << std::endl;
-
-    exportVector("S1", first_S, mp);
-    exportVector("S2", S2, mp);
-    exportVector("S3", S3, mp);
-
-    exportVector("P1", first_P, mp);
-
-    exportVector("S", last_S, mp);
-    exportVector("P", last_P, mp);
-    exportVector("I", result.I, mp);
+    exportMultiVector("I", {"t", "I"}, {t, I}, mp);
 
     return 0;
 }

@@ -1,23 +1,7 @@
 #include <vector>
 
 
-struct I_approximation_result {
-    std::vector<double> I;
-    std::vector <std::vector<double>> S;
-    std::vector <std::vector<double>> P;
-
-    I_approximation_result(
-            std::vector<double> _I,
-            std::vector <std::vector<double>> _S,
-            std::vector <std::vector<double>> _P
-    ) {
-        I = _I;
-        S = _S;
-        P = _P;
-    }
-};
-
-I_approximation_result approximate_I(
+std::vector<double> approximate_I(
         std::vector<double> x,
         std::vector<double> t,
         std::vector<double> D_s,

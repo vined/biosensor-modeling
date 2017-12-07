@@ -1,8 +1,7 @@
 unset log
 unset label
 set encoding utf8
-set title "Last S"
+set title "S at time 0.001"
 set xlabel "x, {/Symbol m}m"
 set ylabel "S, mmol m^{-3}"
-#set yr [0.06:]
-plot "out/S.dat" u ($1*1e6):2 title 'S' with lines
+plot "out/S1.dat" u ($1*1e6):2 title 'S' with lines

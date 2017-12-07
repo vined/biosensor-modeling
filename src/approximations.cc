@@ -12,7 +12,7 @@
 
 #define F 96485.3365 // Faraday constant (C/mol)
 
-I_approximation_result approximate_I(
+std::vector<double> approximate_I(
         std::vector<double> x,
         std::vector<double> t,
         std::vector<double> D_s,
@@ -36,56 +36,79 @@ I_approximation_result approximate_I(
     std::vector<double> I;
     I.push_back(0.0);
 
-    std::vector<std::vector<double>> S;
-    std::vector<std::vector<double>> P;
-
     // S initial values
-    std::vector<double> S_k = getZeroVector(x.size()-1);
+    std::vector<double> S_k = getZeroVector(x.size() - 1);
     S_k.push_back(S_0);
-    S.push_back(S_k);
 
     // P initial values
     std::vector<double> P_k = getZeroVector(x.size());
-    P.push_back(P_k);
 
-    for (int i = 1; i < t.size()-1; i++) {
-//    for (int i = 1; i < 5; i++) {
-        std::cout << ".";
-        double t_step = t[i+1] - t[i];
+    // To optimize calculations, a, b, c for S and P will be recalculated only when t_step is changing
+    double t_step = 0;
+
+    std::vector<double> s_a;
+    std::vector<double> s_b;
+    std::vector<double> s_c;
+    std::vector<double> s_A;
+    std::vector<double> s_B;
+
+    std::vector<double> p_a;
+    std::vector<double> p_b;
+    std::vector<double> p_c;
+    std::vector<double> p_B;
+
+    std::vector<double> zero_v = getZeroVector(x.size() - 2);
+
+    for (int i = 1; i < t.size() - 1; i++) {
+//    for (int i = 1; i < 2; i++) {
+
+        double new_t_step = t[i + 1] - t[i];
+        if (new_t_step > t_step) {
+            t_step = new_t_step;
+
+            s_a = get_a(D_s, x);
+            s_b = get_b(D_s, x);
+            s_c = get_c(t_step, C1, s_a, s_b);
+            s_A = solveCustomisedTridiagonalThomasMatrix3(s_a, s_b, s_c, zero_v, 1.0, 0.0);
+            s_B = solveCustomisedTridiagonalThomasMatrix3(s_a, s_b, s_c, zero_v, 0.0, 1.0);
+
+            p_a = get_a(D_p, x);
+            p_b = get_b(D_p, x);
+            p_c = get_c(t_step, C2, p_a, p_b);
+            p_B = solveCustomisedTridiagonalThomasMatrix3(p_a, p_b, p_c, zero_v, 0.0, 1.0);
+        }
+
 
         // Approximate S
-        std::vector<double> S_k_half = getApproximateSkHalf(S_k, D_s, x, alpha, f, t_step, V_max, K_m, C1, q, delta);
-        std::vector<double> S_i = getNextFromHalfValues(S_k, S_k_half);
-        S_i.at(S_i.size()-1) = S_0;
+        std::vector<double> S_k_half = getApproximateSkHalf(S_k, alpha, f, s_a, s_b, s_c, s_A, s_B, t_step, V_max, K_m,
+                                                            C1, q, delta);
+        std::vector<double> S_k = getNextFromHalfValues(S_k, S_k_half);
+        S_k.at(S_k.size() - 1) = S_0;
 
-//        std::cout << "S_i:" << std::endl;
-//        printVector(S_i, 0);
-//        std::cout << std::endl;
-//
-//        exportVector("S_", S_i, 15);
 
-        S.push_back(S_i);
-        S_k = S_i;
-
-        std::cout << ".";
 
         // Approximate P
-        std::vector<double> P_k_half = getApproximatePkHalf(P_k, S_k_half, D_p, x, alpha, g, t_step, V_max, K_m, C2, q);
-        std::vector<double> P_i = getNextFromHalfValues(P_k, P_k_half);
-        P_i.at(0) = 0.0;
+        std::vector<double> P_k_half = getApproximatePkHalf(P_k, S_k_half, alpha, g, p_a, p_b, p_c, p_B, t_step, V_max,
+                                                            K_m, C2, q);
+        std::vector<double> P_k = getNextFromHalfValues(P_k, P_k_half);
+        P_k.at(0) = 0.0;
 
-        P.push_back(P_i);
-        P_k = P_i;
 
-        std::cout << "-";
-//        std::cout << std::endl;
 
         // Calculate current near electrode
         I.push_back(
-                n_e * F * D_p[0] * ( - (p0 * P_k[0]) + (p1 * P_k[1]) - (p2 * P_k[2]) )
+                n_e * F * D_p[0] * (-(p0 * P_k[0]) + (p1 * P_k[1]) - (p2 * P_k[2]))
         );
-    }
-    std::cout << std::endl;
 
-    return I_approximation_result(I, S, P);
+        if (i == 1) {
+            exportMultiVector("S1", {"x", "S"}, {x, S_k}, 15);
+            exportMultiVector("P1", {"x", "P"}, {x, P_k}, 15);
+
+        } else if (i == t.size() - 2) {
+            exportMultiVector("S", {"x", "S"}, {x, S_k}, 15);
+            exportMultiVector("P", {"x", "P"}, {x, P_k}, 15);
+        }
+    }
+
+    return I;
 }
