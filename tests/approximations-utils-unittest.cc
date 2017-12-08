@@ -44,17 +44,6 @@ TEST(ApproximationsUtilsTest, GetZeroVector) {
     EXPECT_THAT(z, testing::ElementsAreArray({0, 0, 0, 0}));
 }
 
-TEST(ApproximationsUtilsTest, Slice) {
-
-    std::vector<double> vec {1, 2, 3, 4, 5, 6};
-
-    std::vector<double> z1 = slice(2, 4, vec);
-    EXPECT_THAT(z1, testing::ElementsAreArray({3, 4, 5}));
-
-    std::vector<double> z2 = slice(0, 5, vec);
-    EXPECT_THAT(z2, testing::ElementsAreArray({1, 2, 3, 4, 5, 6}));
-}
-
 TEST(ApproximationsUtilsTest, NegateVector) {
 
     std::vector<double> vec {1, 2, 3, 4};

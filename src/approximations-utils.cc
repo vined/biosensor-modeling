@@ -60,6 +60,21 @@ double getMidVal(std::vector<double> v, int i, bool up) {
     }
 }
 
+std::vector<double> getNextFromHalfValues(
+        std::vector<double> prev,
+        std::vector<double> y
+) {
+    std::vector<double> result;
+
+    for (unsigned i = 0; i < prev.size(); i++) {
+        result.push_back(
+                2.0 * y[i] - prev[i]
+        );
+    }
+
+    return result;
+}
+
 std::vector<double> getVectorWithValue(int n, double value) {
     std::vector<double> d;
 
@@ -74,36 +89,11 @@ std::vector<double> getZeroVector(int n) {
     return getVectorWithValue(n, 0.0);
 }
 
-std::vector<double> slice(int from, int to, std::vector<double> vec) {
-    std::vector<double> result;
-
-    for (int i = from; i <= to; i++) {
-        result.push_back(vec[i]);
-    }
-
-    return result;
-}
-
 std::vector<double> negateVector(std::vector<double> vec) {
     std::vector<double> result;
 
     for (double val : vec) {
         result.push_back(-val);
-    }
-
-    return result;
-}
-
-std::vector<double> getNextFromHalfValues(
-        std::vector<double> prev,
-        std::vector<double> y
-) {
-    std::vector<double> result;
-
-    for (unsigned i = 0; i < prev.size(); i++) {
-        result.push_back(
-                2.0 * y[i] - prev[i]
-        );
     }
 
     return result;
