@@ -37,7 +37,7 @@ mp - machine precision
 vector<double> getTimeIntervals(int T, int M, int mp) {
 
     double tau = T/(double)M;
-    double tau_min = pow(10, mp) * 100;
+//    double tau_min = pow(10, mp) * 100;
 
 //    int m = floor( log2( tau/tau_min ));
 

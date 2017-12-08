@@ -157,5 +157,5 @@ biosensor-modeling-unittests : exponent-intervals.o values-range.o values-net.o 
 		exponent-intervals-unittest.o time-intervals-unittest.o \
 		approximations-utils.o approximations-utils-unittest.o \
 		gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -llapack -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 

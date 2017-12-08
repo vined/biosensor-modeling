@@ -46,14 +46,14 @@ std::vector<double> approximate_I(
     // To optimize calculations, a, b, c for S and P will be recalculated only when t_step is changing
     double t_step = 0;
 
-    std::vector<double> s_a;
-    std::vector<double> s_b;
+    std::vector<double> s_a = get_a(D_s, x);
+    std::vector<double> s_b = get_b(D_s, x);
     std::vector<double> s_c;
     std::vector<double> s_A;
     std::vector<double> s_B;
 
-    std::vector<double> p_a;
-    std::vector<double> p_b;
+    std::vector<double> p_a = get_a(D_p, x);
+    std::vector<double> p_b = get_b(D_p, x);
     std::vector<double> p_c;
     std::vector<double> p_B;
 
@@ -66,14 +66,10 @@ std::vector<double> approximate_I(
         if (new_t_step > t_step) {
             t_step = new_t_step;
 
-            s_a = get_a(D_s, x);
-            s_b = get_b(D_s, x);
             s_c = get_c(t_step, C1, s_a, s_b);
             s_A = solveCustomisedTridiagonalThomasMatrix3(s_a, s_b, s_c, zero_v, 1.0, 0.0);
             s_B = solveCustomisedTridiagonalThomasMatrix3(s_a, s_b, s_c, zero_v, 0.0, 1.0);
 
-            p_a = get_a(D_p, x);
-            p_b = get_b(D_p, x);
             p_c = get_c(t_step, C2, p_a, p_b);
             p_B = solveCustomisedTridiagonalThomasMatrix3(p_a, p_b, p_c, zero_v, 0.0, 1.0);
         }
@@ -82,17 +78,15 @@ std::vector<double> approximate_I(
         // Approximate S
         std::vector<double> S_k_half = getApproximateSkHalf(S_k, alpha, f, s_a, s_b, s_c, s_A, s_B, t_step, V_max, K_m,
                                                             C1, q, delta);
-        std::vector<double> S_k = getNextFromHalfValues(S_k, S_k_half);
+        S_k = getNextFromHalfValues(S_k, S_k_half);
         S_k.at(S_k.size() - 1) = S_0;
-
 
 
         // Approximate P
         std::vector<double> P_k_half = getApproximatePkHalf(P_k, S_k_half, alpha, g, p_a, p_b, p_c, p_B, t_step, V_max,
                                                             K_m, C2, q);
-        std::vector<double> P_k = getNextFromHalfValues(P_k, P_k_half);
+        P_k = getNextFromHalfValues(P_k, P_k_half);
         P_k.at(0) = 0.0;
-
 
 
         // Calculate current near electrode

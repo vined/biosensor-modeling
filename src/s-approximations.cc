@@ -23,7 +23,7 @@ std::vector<double> _get_F(
 
     for (unsigned i = 1; i < y.size() - 1; i++) {
         F.push_back(
-                (2 * S_k[i] / t_step) - ( (alpha[i] * V_max * y[i]) / (K_m + y[i]) ) + f[i]
+                (2 * S_k[i] / t_step) - ((alpha[i] * V_max * y[i]) / (K_m + y[i])) + f[i]
         );
     }
     return F;
@@ -40,7 +40,7 @@ double _get_new_y_0(
     double a = l * (S_0 * B[1] + Y[1]) - (S_0 * B[2]) - Y[2];
     double b = l * (1 - A[1]) + A[2] - 1;
 
-    return a/b;
+    return a / b;
 }
 
 std::vector<double> _get_new_approximations(
@@ -50,13 +50,14 @@ std::vector<double> _get_new_approximations(
         std::vector<double> Y,
         double q
 ) {
+    unsigned N = y_old.size() - 1;
     std::vector<double> y_new;
-    double S_0 = y_old[y_old.size()-1];
+    double S_0 = y_old[N];
 
     double y0 = _get_new_y_0(A, B, Y, S_0, q);
     y_new.push_back(y0);
 
-    for (int i = 1; i < y_old.size()-1; i++) {
+    for (int i = 1; i < N; i++) {
         y_new.push_back(
                 y0 * A[i] + S_0 * B[i] + Y[i]
         );
@@ -95,6 +96,7 @@ std::vector<double> getApproximateSkHalf(
 
     do {
         if (i > MAX_ITERATIONS) {
+            std::cout << "-- Max iterations reached --" << std::endl;
             throw 100;
         }
         i++;

@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <utility>
+#include <ctime>
 
 #include "values-net.h"
 #include "machine-precision.h"
@@ -125,6 +126,8 @@ int main(int argc, char *argv[]) {
     // Todo generate exponential S0
 
     std::cout << "Approximating I..." << std::endl;
+    time_t t1 = time(NULL);
+
     std::vector<double> I = approximate_I(
             x,
             t,
@@ -143,7 +146,7 @@ int main(int argc, char *argv[]) {
             delta
     );
 
-    std::cout << "I approximation finished, exporting results..." << std::endl;
+    std::cout << "I approximation finished in " << difftime(time(NULL), t1) << "s, exporting results..." << std::endl;
     std::cout << "I size: " << I.size() << std::endl;
 
     // Todo: Calculate i

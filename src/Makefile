@@ -1,6 +1,5 @@
 
 CXXFLAGS = -std=c++11
-LDLIBS += -llapack
 
 objects = main.o \
     exponent-intervals.o values-range.o values-net.o time-intervals.o \
@@ -9,7 +8,7 @@ objects = main.o \
     output-utils.o
 
 biosensor-modeling: $(objects)
-	$(CXX) $(CXXFLAGS) $(objects) $(LDLIBS) -o biosensor-modeling
+	$(CXX) $(CXXFLAGS) $(objects) -o biosensor-modeling
 
 main.o: exponent-intervals.h
 exponent-intervals.o: exponent-intervals.h

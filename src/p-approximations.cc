@@ -20,9 +20,9 @@ std::vector<double> _get_G(
 ) {
     std::vector<double> G;
 
-    for (int i = 1; i < P_k.size() - 2; i++) {
+    for (int i = 1; i < P_k.size() - 1; i++) {
         G.push_back(
-                (2 * P_k[i] / t_step) + ( (alpha[i] * V_max * S_k_half[i]) / (K_m + S_k_half[i]) ) + g[i]
+                (2 * P_k[i] / t_step) + ((alpha[i] * V_max * S_k_half[i]) / (K_m + S_k_half[i])) + g[i]
         );
     }
 
@@ -34,13 +34,13 @@ double _get_P_n(
         std::vector<double> Y,
         double q
 ) {
-    int N = B.size()-1;
+    int N = B.size() - 1;
 
     double l = pow(1 + q, 2);
-    double a = l * Y[N-1] + Y[N-2];
-    double b = l * (1 - B[N-1]) + B[N-2] - 1;
+    double a = l * Y[N - 1] + Y[N - 2];
+    double b = l * (1 - B[N - 1]) + B[N - 2] - 1;
 
-    return a/b;
+    return a / b;
 }
 
 std::vector<double> _get_new_approximations(
@@ -51,12 +51,12 @@ std::vector<double> _get_new_approximations(
 ) {
 
     std::vector<double> P_k_half;
-    int N = P_k.size()-1;
+    int N = P_k.size() - 1;
     double P_n = _get_P_n(B, Y, q);
 
     P_k_half.push_back(0.0);
 
-    for (int i = 1; i < N-1; i++) {
+    for (int i = 1; i < N; i++) {
         P_k_half.push_back(
                 P_n * B[i] + Y[i]
         );
