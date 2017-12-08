@@ -1,8 +1,6 @@
 #ifndef BIOSENSOR_MODELING_PARAMETERS_UTILS_H
 #define BIOSENSOR_MODELING_PARAMETERS_UTILS_H
 
-#endif //BIOSENSOR_MODELING_PARAMETERS_UTILS_H
-
 #include <cmath>
 #include <string>
 
@@ -24,6 +22,7 @@ struct parameters {
     double Vmax;
     double Km;
     double S0;
+    unsigned L;
     unsigned ne;
 
     parameters() {}
@@ -44,6 +43,7 @@ struct parameters {
             double _Vmax,
             double _Km,
             double _S0,
+            unsigned _L,
             unsigned _ne
     ) {
         d_e = _d_e * pow(10, -6);
@@ -61,6 +61,7 @@ struct parameters {
         Vmax = _Vmax;
         Km = _Km;
         S0 = _S0;
+        L = _L;
         ne = _ne;
     }
 
@@ -81,6 +82,7 @@ struct parameters {
                + "Vmax=" + std::to_string(Vmax) + ", "
                + "Km=" + std::to_string(Km) + ", "
                + "S0=" + std::to_string(S0) + ", "
+               + "L=" + std::to_string(L) + ", "
                + "ne=" + std::to_string(ne);
 
         return str;
@@ -92,3 +94,5 @@ parameters readParameters(std::string);
 std::vector<double> get_alpha(int de_length, int dm_length);
 
 std::vector<double> get_D(std::vector<double> alpha, double D_e, double D_m);
+
+#endif //BIOSENSOR_MODELING_PARAMETERS_UTILS_H

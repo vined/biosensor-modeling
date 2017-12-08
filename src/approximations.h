@@ -1,5 +1,7 @@
 #include <vector>
 
+#include "parameters-utils.h"
+
 
 std::vector<double> approximate_I(
         std::vector<double> x,
@@ -9,12 +11,7 @@ std::vector<double> approximate_I(
         std::vector<double> alpha,
         std::vector<double> f,
         std::vector<double> g,
-        double S_0,
-        double V_max,
-        double K_m,
-        double C1,
-        double C2,
-        int n_e,
+        parameters params,
         double q,
         double delta
 );

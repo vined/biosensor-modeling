@@ -86,12 +86,7 @@ int main(int argc, char *argv[]) {
             alpha,
             f,
             g,
-            params.S0,
-            params.Vmax,
-            params.Km,
-            params.C1,
-            params.C2,
-            params.ne,
+            params,
             field_params.q,
             delta
     );

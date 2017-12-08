@@ -18,6 +18,7 @@
 # Vmax - Maximum reaction speed in ferment part (mmol/(m^3 s))
 # Km - Michaelis constant (mol / m^3)
 # S0 - Initial substrate concentration (mol / m^3)
+# L - controls width of Gaussian function for initial S with S0
 # ne - Count of electric current transfering electrons in electrode (1 or 2)
 
 # - Grid parameters -
@@ -37,4 +38,5 @@
 0.3     #Vmax
 0.23    #Km
 0.07    #S0
+100    #L
 1       #ne

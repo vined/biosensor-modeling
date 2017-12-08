@@ -99,6 +99,27 @@ std::vector<double> negateVector(std::vector<double> vec) {
     return result;
 }
 
+std::vector<double> getExponentialS0(
+        double S0,
+        double d,
+        unsigned L,
+        std::vector<double> xs
+) {
+
+    std::vector<double> res;
+
+    double a = S0 / exp(L);
+    double b = L / d;
+
+    for (double x: xs) {
+        res.push_back(
+                a * exp(b * x)
+        );
+    }
+
+    return res;
+}
+
 std::vector<double> get_a(
         std::vector<double> D,
         std::vector<double> x

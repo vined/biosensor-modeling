@@ -27,6 +27,12 @@ std::vector<double> getNextFromHalfValues(
         std::vector<double> y
 );
 
+std::vector<double> getExponentialS0(
+        double S0,
+        double d,
+        unsigned L,
+        std::vector<double> xs
+);
 
 std::vector<double> get_a(
         std::vector<double> D,

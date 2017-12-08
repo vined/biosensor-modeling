@@ -26,7 +26,8 @@ parameters parseParameters(std::vector <std::string> argv) {
                     std::stof(argv[11]), //Vmax
                     std::stof(argv[12]), //Km
                     std::stof(argv[13]), //S0
-                    std::stoi(argv[14])  //ne
+                    std::stoi(argv[14]), //L
+                    std::stoi(argv[15])  //ne
             );
 }
 
