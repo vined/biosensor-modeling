@@ -158,7 +158,7 @@ std::vector<double> get_c(
     return c;
 }
 
-std::vector<double> solveCustomisedTridiagonalThomasMatrix3(
+std::vector<double> solveTridiagonalThomasMatrix(
         std::vector<double> a,
         std::vector<double> b,
         std::vector<double> c,

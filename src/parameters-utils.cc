@@ -1,70 +1,77 @@
 #include <fstream>
+#include <iostream>
 #include <stdlib.h>
 #include <vector>
-
 
 #include "approximations-utils.h"
 #include "parameters-utils.h"
 
-// DEMO parameters
-grid_parameters getDemoGridParameters() {
-    return grid_parameters
+
+parameters parseParameters(std::vector <std::string> argv) {
+    return parameters
             (
                     //Grid parameters
-                    9, // d_e
-                    10, // d_m
-                    500, // N_b
-                    200, // T
-                    100000 // M
-            );
-}
-
-model_parameters getDemoModelParameters() {
-    return model_parameters
-            (
+                    std::stof(argv[0]), // d_e
+                    std::stof(argv[1]), // d_m
+                    std::stoi(argv[2]), // N_b
+                    std::stoi(argv[3]), // T
+                    std::stoi(argv[4]),  // M
                     //Model parameters
-                    22.0, //Dse
-                    7.0, //Dsm
-                    20.0, //Dpe
-                    6.0, //Dpm
-                    0.0, //C1
-                    0.0, //C2
-                    0.3, //Vmax
-                    0.23, //Km
-                    0.07, //S0
-                    1 //ne
+                    std::stof(argv[5]), //Dse
+                    std::stof(argv[6]), //Dsm
+                    std::stof(argv[7]), //Dpe
+                    std::stof(argv[8]), //Dpm
+                    std::stof(argv[9]), //C1
+                    std::stof(argv[10]), //C2
+                    std::stof(argv[11]), //Vmax
+                    std::stof(argv[12]), //Km
+                    std::stof(argv[13]), //S0
+                    std::stoi(argv[14])  //ne
             );
 }
 
+std::ifstream openFile(std::string fileName) {
+    std::ifstream file;
+    file.open(fileName);
 
-// Parameters parsers
-grid_parameters parseGridParameters(int argc, char *argv[]) {
-    return grid_parameters
-            (
-                    //Grid parameters
-                    atof(argv[1]), // d_e
-                    atof(argv[2]), // d_m
-                    atoi(argv[3]), // N_b
-                    atoi(argv[4]), // T
-                    atoi(argv[5])  // M
-            );
+    if (file.is_open()) {
+        return file;
+    }
+
+    std::cout << "Failed to open file: " << fileName << std::endl;
+    throw 200;
 }
 
-model_parameters parseModelParameters(int argc, char *argv[]) {
-    return model_parameters
-            (
-                    //Model parameters
-                    atof(argv[6]), //Dse
-                    atof(argv[7]), //Dsm
-                    atof(argv[8]), //Dpe
-                    atof(argv[9]), //Dpm
-                    atof(argv[10]), //C1
-                    atof(argv[11]), //C2
-                    atof(argv[12]), //Vmax
-                    atof(argv[13]), //Km
-                    atof(argv[14]), //S0
-                    atoi(argv[15])  //ne
+bool isCommentOrEmpty(std::string line) {
+    return line.size() == 0 || line[0] == '#';
+}
+
+std::string getValue(std::string line) {
+
+    std::size_t pos = line.find_first_of(" #;,\t\n");
+
+    if (pos != std::string::npos) {
+        return line.substr(0, pos);
+    }
+    return line;
+}
+
+parameters readParameters(std::string fileName) {
+
+    std::ifstream paramsFile = openFile(fileName);
+    std::string line;
+    std::vector <std::string> params;
+
+    while (getline(paramsFile, line)) {
+
+        if (!isCommentOrEmpty(line)) {
+            params.push_back(
+                    getValue(line)
             );
+        }
+    }
+
+    return parseParameters(params);
 }
 
 std::vector<double> get_alpha(int de_length, int dm_length) {
@@ -80,7 +87,7 @@ std::vector<double> get_D(std::vector<double> alpha, double D_e, double D_m) {
 
     std::vector<double> D;
 
-    for(double a: alpha) {
+    for (double a: alpha) {
         if (a > 0.0) {
             D.push_back(D_e);
         } else {

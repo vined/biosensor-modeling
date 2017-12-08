@@ -4,7 +4,7 @@
 #include <vector>
 
 
-#define OUTPUT "../out/"
+#define OUTPUT "out/"
 
 void printVector(std::vector<double> vect, int max) {
     int i = 0;
@@ -67,5 +67,5 @@ void exportMultiVector(
     }
 
     dat.close();
-    std::cout << "Exporting vectors to" << fileName << " done." << std::endl;
+    std::cout << "Exporting vectors to " << fileName << " done." << std::endl;
 }

@@ -97,12 +97,12 @@ std::vector<double> getApproximateSkHalf(
     do {
         if (i > MAX_ITERATIONS) {
             std::cout << "-- Max iterations reached --" << std::endl;
-            throw 100;
+            throw 200;
         }
         i++;
 
         std::vector<double> F = _get_F(t_step, V_max, K_m, S_k, y_old, alpha, f);
-        std::vector<double> Y = solveCustomisedTridiagonalThomasMatrix3(a, b, c, F, 0.0, 0.0);
+        std::vector<double> Y = solveTridiagonalThomasMatrix(a, b, c, F, 0.0, 0.0);
 
         y_new = _get_new_approximations(y_old, A, B, Y, q);
 

@@ -37,8 +37,10 @@ std::vector<double> approximate_I(
     I.push_back(0.0);
 
     // S initial values
+    // Todo generate exponential Sk from S0
     std::vector<double> S_k = getZeroVector(x.size() - 1);
     S_k.push_back(S_0);
+    exportMultiVector("Sk0", {"x", "S"}, {x, S_k}, 15);
 
     // P initial values
     std::vector<double> P_k = getZeroVector(x.size());
@@ -60,18 +62,17 @@ std::vector<double> approximate_I(
     std::vector<double> zero_v = getZeroVector(x.size() - 2);
 
     for (int i = 1; i < t.size() - 1; i++) {
-//    for (int i = 1; i < 2; i++) {
 
         double new_t_step = t[i + 1] - t[i];
         if (new_t_step > t_step) {
             t_step = new_t_step;
 
             s_c = get_c(t_step, C1, s_a, s_b);
-            s_A = solveCustomisedTridiagonalThomasMatrix3(s_a, s_b, s_c, zero_v, 1.0, 0.0);
-            s_B = solveCustomisedTridiagonalThomasMatrix3(s_a, s_b, s_c, zero_v, 0.0, 1.0);
+            s_A = solveTridiagonalThomasMatrix(s_a, s_b, s_c, zero_v, 1.0, 0.0);
+            s_B = solveTridiagonalThomasMatrix(s_a, s_b, s_c, zero_v, 0.0, 1.0);
 
             p_c = get_c(t_step, C2, p_a, p_b);
-            p_B = solveCustomisedTridiagonalThomasMatrix3(p_a, p_b, p_c, zero_v, 0.0, 1.0);
+            p_B = solveTridiagonalThomasMatrix(p_a, p_b, p_c, zero_v, 0.0, 1.0);
         }
 
 

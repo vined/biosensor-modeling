@@ -85,7 +85,7 @@ std::vector<double> getApproximatePkHalf(
         double q
 ) {
     std::vector<double> G = _get_G(t_step, V_max, K_m, P_k, S_k_half, alpha, g);
-    std::vector<double> Y = solveCustomisedTridiagonalThomasMatrix3(a, b, c, G, 0.0, 0.0);
+    std::vector<double> Y = solveTridiagonalThomasMatrix(a, b, c, G, 0.0, 0.0);
 
     return _get_new_approximations(P_k, B, Y, q);
 }
