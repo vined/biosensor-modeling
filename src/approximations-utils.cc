@@ -75,6 +75,24 @@ std::vector<double> getNextFromHalfValues(
     return result;
 }
 
+std::vector<double> getCurrentDensityOverTime(std::vector<double> I) {
+
+    std::vector<double> its;
+
+    for (double i: I) {
+
+        double itk = 0;
+
+        if (itk < 0) {
+            std::cout << "Current density is not increasing monotonically" << std::endl;
+            throw 400;
+        }
+
+    }
+
+    return its;
+}
+
 std::vector<double> getVectorWithValue(int n, double value) {
     std::vector<double> d;
 
@@ -179,7 +197,6 @@ std::vector<double> solveTridiagonalThomasMatrix(
 ) {
 
     // Alpha
-    // Todo OPTIMIZE: alpha can be calculated once, does not use F
 
     std::vector<double> alpha;
     double alpha_i = 0.0;
@@ -203,32 +220,18 @@ std::vector<double> solveTridiagonalThomasMatrix(
 
     // y
 
-    unsigned N = F.size()+2;
+    unsigned N = F.size() + 2;
     std::vector<double> y(N);
 
     double y_i = gamma2;
-    y[N-1] = y_i;
+    y[N - 1] = y_i;
 
-    for (int i = alpha.size() - 1; i >= 0; i--) {
+    for (int i = alpha.size() - 1; i > 0; i--) {
         y_i = alpha[i] * y_i + beta[i];
         y[i] = y_i;
     }
 
-    return y;
+    y[0] = gamma1;
 
-    // y reversed - takes a bit longer
-//
-//    std::vector<double> y_rev;
-//    double y_i = gamma2;
-//    y_rev.push_back(y_i);
-//
-//    for (int i = alpha.size() - 1; i >= 0; i--) {
-//        y_i = alpha[i] * y_i + beta[i];
-//        y_rev.push_back(y_i);
-//    }
-//
-//    std::vector<double> y(y_rev.size());
-//    std::reverse_copy(y_rev.begin(), y_rev.end(), y.begin());
-//
-//    return y;
+    return y;
 }
