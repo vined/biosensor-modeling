@@ -75,24 +75,6 @@ std::vector<double> getNextFromHalfValues(
     return result;
 }
 
-std::vector<double> getCurrentDensityOverTime(std::vector<double> I) {
-
-    std::vector<double> its;
-
-    for (double i: I) {
-
-        double itk = 0;
-
-        if (itk < 0) {
-            std::cout << "Current density is not increasing monotonically" << std::endl;
-            throw 400;
-        }
-
-    }
-
-    return its;
-}
-
 std::vector<double> getVectorWithValue(int n, double value) {
     std::vector<double> d;
 

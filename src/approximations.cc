@@ -2,6 +2,8 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <stdio.h>
+#include <string.h>
 
 #include "approximations-utils.h"
 #include "s-approximations.h"
@@ -12,6 +14,25 @@
 
 
 #define F 96485.3365 // Faraday constant (C/mol)
+
+double getCurrentTimeDerivative(
+        double t1, double t2, double t3,
+        double i1, double i2, double i3
+) {
+
+    double a1 = (t3 - t2) / (t1 - t2) * (t1 - t3);
+    double a2 = (t3 - t1) / (t2 - t1) * (t2 - t3);
+    double a3 = (2 * t3 - t1 -t2) / (t3 - t1) * (t3 - t2);
+
+    double cd = a1 * i1 + a2 * i2 + a3 * i3;
+
+    if (cd < 0) {
+        std::cout << "Current density is not increasing monotonically" << std::endl;
+        throw 400;
+    }
+
+    return cd;
+}
 
 std::vector<double> approximate_I(
         std::vector<double> x,
@@ -31,6 +52,8 @@ std::vector<double> approximate_I(
 
     std::vector<double> I;
     I.push_back(0.0);
+    std::vector<double> itks;
+    itks.push_back(0.0);
 
     // S initial values
     std::vector<double> S_k = getExponentialS0(params.S0, params.d_e + params.d_m, params.L, x);
@@ -38,6 +61,11 @@ std::vector<double> approximate_I(
 
     // P initial values
     std::vector<double> P_k = getZeroVector(x.size());
+
+    // Current density initial values
+    double ts = 0;
+    double is = 0;
+    double max_itk = 0;
 
     // To optimize calculations, a, b, c for S and P will be recalculated only when t_step is changing
     double t_step = 0;
@@ -55,7 +83,7 @@ std::vector<double> approximate_I(
 
     std::vector<double> zero_v = getZeroVector(x.size() - 2);
 
-    for (int i = 1; i < t.size() - 1; i++) {
+    for (int i = 0; i < t.size() - 1; i++) {
 
         double new_t_step = t[i + 1] - t[i];
         if (new_t_step > t_step) {
@@ -89,15 +117,28 @@ std::vector<double> approximate_I(
                 params.ne * F * D_p[0] * (-(p0 * P_k[0]) + (p1 * P_k[1]) - (p2 * P_k[2]))
         );
 
-        if (i == 1) {
-            exportMultiVector("S1", {"x", "S"}, {x, S_k}, 15);
-            exportMultiVector("P1", {"x", "P"}, {x, P_k}, 15);
 
-        } else if (i == t.size() - 2) {
+        if (i > 0) {
+//            double itk = getCurrentTimeDerivative(
+//                    t[i-2], t[i-1], t[i],
+//                    I[i-2], I[1-1], I[i]
+//            );
+            double itk = (I[i]-I[i-1]) / t_step;
+
+            if (itk > max_itk) {
+                max_itk = itk;
+            }
+
+            itks.push_back(itk);
+        }
+
+
+        if (i == t.size() - 2) {
             exportMultiVector("S", {"x", "S"}, {x, S_k}, 15);
             exportMultiVector("P", {"x", "P"}, {x, P_k}, 15);
         }
     }
 
+    exportMultiVector("It", {"t", "i'"}, {t, itks}, 15);
     return I;
 }

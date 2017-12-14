@@ -1,6 +1,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 #include "p-approximations.h"
 #include "approximations-utils.h"
@@ -40,6 +41,7 @@ double _get_P_n(
     double a = l * Y[N - 1] + Y[N - 2];
     double b = l * (1 - B[N - 1]) + B[N - 2] - 1;
 
+    std::cout << "P_n: " << a/b << " Y[N-1]: " << Y[N-1] << " Y[N-2]: " << Y[N-2] << std::endl;
     return a / b;
 }
 
@@ -51,12 +53,11 @@ std::vector<double> _get_new_approximations(
 ) {
 
     std::vector<double> P_k_half;
-    int N = P_k.size() - 1;
-    double P_n = _get_P_n(B, Y, q);
+    double P_n = 0;//_get_P_n(B, Y, q);
 
     P_k_half.push_back(0.0);
 
-    for (int i = 1; i < N; i++) {
+    for (int i = 1; i < P_k.size() - 1; i++) {
         P_k_half.push_back(
                 P_n * B[i] + Y[i]
         );

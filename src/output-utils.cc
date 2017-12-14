@@ -59,7 +59,14 @@ void exportMultiVector(
     }
     dat << std::endl;
 
-    for (unsigned i = 0; i < vectors[0].size(); i++) {
+    unsigned n = vectors[0].size();
+    for (std::vector<double> v: vectors) {
+        if (v.size() < n) {
+            n = v.size();
+        }
+    }
+
+    for (unsigned i = 0; i < n; i++) {
         for (unsigned j = 0; j < vectors.size(); j++) {
             dat << vectors[j][i] << '\t';
         }

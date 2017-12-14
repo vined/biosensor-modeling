@@ -24,8 +24,8 @@
 # - Grid parameters -
 9       #d_e
 10      #d_m
-50      #N_b
-10      #T
+50     #N_b
+30      #T
 10000   #M
 
 # - Model parameters -
