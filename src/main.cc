@@ -47,8 +47,8 @@ int main(int argc, char *argv[]) {
     std::vector<double> alpha;
     std::vector<double> D_s;
     std::vector<double> D_p;
-    double C1[NODES] = {0.02, 0.03, 0.04};
-    double C2[NODES] = {0.1, 0.2, 0.3};
+    double C1[NODES] = {0.02, 0.025, 0.03};
+    double C2[NODES] = {0.005, 0.01, 0.019};
 
     // Calculation results
     double I[NODES];
@@ -116,24 +116,22 @@ int main(int argc, char *argv[]) {
             delta
     );
 
+
     std::cout << processor_id << " I approximation finished in " << difftime(time(NULL), t1) << "s" << std::endl;
 
-    int result_cnt = 1;
-    double res_I [result_cnt] = {I_t.first};
-    double res_T [result_cnt] = {I_t.second};
-
     MPI_Gather(
-            res_I, result_cnt, MPI_DOUBLE,
-            I, NODES, MPI_DOUBLE,
+            &I_t.first, 1, MPI_DOUBLE,
+            I, 1, MPI_DOUBLE,
             OPEN_MPI_MANAGER_ID, MPI_COMM_WORLD
     );
 
     MPI_Gather(
-            res_T, result_cnt, MPI_DOUBLE,
-            T, NODES, MPI_DOUBLE,
+            &I_t.second, 1, MPI_DOUBLE,
+            T, 1, MPI_DOUBLE,
             OPEN_MPI_MANAGER_ID, MPI_COMM_WORLD
     );
 
+    MPI_Barrier( MPI_COMM_WORLD );
 
     // Results
 
