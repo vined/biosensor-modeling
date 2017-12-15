@@ -44,6 +44,8 @@ std::pair<double, double> approximate_I(
         std::vector<double> g,
         grid_parameters grid_params,
         model_parameters params,
+        double C1,
+        double C2,
         double q,
         double delta
 ) {
@@ -85,25 +87,25 @@ std::pair<double, double> approximate_I(
         if (new_t_step > t_step) {
             t_step = new_t_step;
 
-            s_c = get_c(t_step, params.C1, s_a, s_b);
+            s_c = get_c(t_step, C1, s_a, s_b);
             s_A = solveTridiagonalThomasMatrix(s_a, s_b, s_c, zero_v, 1.0, 0.0);
             s_B = solveTridiagonalThomasMatrix(s_a, s_b, s_c, zero_v, 0.0, 1.0);
 
-            p_c = get_c(t_step, params.C2, p_a, p_b);
+            p_c = get_c(t_step, C2, p_a, p_b);
             p_B = solveTridiagonalThomasMatrix(p_a, p_b, p_c, zero_v, 0.0, 1.0);
         }
 
 
         // Approximate S
         std::vector<double> S_k_half = getApproximateSkHalf(S_k, alpha, f, s_a, s_b, s_c, s_A, s_B, t_step,
-                                                            params.Vmax, params.Km, params.C1, q, delta);
+                                                            params.Vmax, params.Km, C1, q, delta);
         S_k = getNextFromHalfValues(S_k, S_k_half);
         S_k.at(S_k.size() - 1) = params.S0;
 
 
         // Approximate P
         std::vector<double> P_k_half = getApproximatePkHalf(P_k, S_k_half, alpha, g, p_a, p_b, p_c, p_B, t_step,
-                                                            params.Vmax, params.Km, params.C2, q);
+                                                            params.Vmax, params.Km, C2, q);
         P_k = getNextFromHalfValues(P_k, P_k_half);
         P_k.at(0) = 0.0;
 

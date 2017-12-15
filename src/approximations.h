@@ -14,6 +14,8 @@ std::pair<double, double> approximate_I(
         std::vector<double> g,
         grid_parameters grid_params,
         model_parameters params,
+        double C1,
+        double C2,
         double q,
         double delta
 );

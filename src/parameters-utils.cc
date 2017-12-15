@@ -27,8 +27,6 @@ model_parameters getDemoModelParameters() {
                     7.0, //Dsm
                     20.0, //Dpe
                     6.0, //Dpm
-                    0.0, //C1
-                    0.0, //C2
                     0.3, //Vmax
                     0.23, //Km
                     0.07, //S0
@@ -59,13 +57,11 @@ model_parameters parseModelParameters(int argc, char *argv[]) {
                     atof(argv[7]), //Dsm
                     atof(argv[8]), //Dpe
                     atof(argv[9]), //Dpm
-                    atof(argv[10]), //C1
-                    atof(argv[11]), //C2
-                    atof(argv[12]), //Vmax
-                    atof(argv[13]), //Km
-                    atof(argv[14]), //S0
-                    atof(argv[15]), //S0
-                    atoi(argv[16])  //ne
+                    atof(argv[10]), //Vmax
+                    atof(argv[11]), //Km
+                    atof(argv[12]), //S0
+                    atof(argv[13]), //S0
+                    atoi(argv[14])  //ne
             );
 }
 

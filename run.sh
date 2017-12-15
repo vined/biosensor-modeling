@@ -1,6 +1,6 @@
 #!/bin/sh
 #SBATCH -p short
-#SBATCH -n1
+#SBATCH -n3
 echo ------------------ Building -------------------
 cd src
 make clean

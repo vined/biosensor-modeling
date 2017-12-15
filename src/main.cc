@@ -13,73 +13,14 @@
 #include "approximations.h"
 
 
-#define ALL_ARG_COUNT 1+5+11
-#define C_ARG_COUNT 1+2
+#define ALL_ARG_COUNT 1+5+9
+#define NODES 3
 
-
-static void show_usage() {
-    std::cout
-            << "Usage: biosensor-modeling de dm Nb T M\n"
-            << "Demo mode: biosensor-modeling\n\n"
-
-            << "Options:\n"
-            << "\t-h \t\tShow this help message\n"
-
-            << "Model parameters:\n"
-            //Grid parameters
-            << "\tde \t\tWidth of bio-sensor ferment part (micrometers)\n"
-            << "\tdm \t\tWidth of bio-sensor membrane part (micrometers)\n"
-            << "\tNb \t\tDensity of bio-sensor width values (int)\n"
-            << "\tT \t\tMaximum model time (s)\n"
-            << "\tM \t\tTime steps count (int)\n"
-            //Model parameters
-            << "\tDse \t\tSubstrate diffusion coefficient of ferment part (micrometers^2 / s)\n"
-            << "\tDsm \t\tSubstrate diffusion coefficient of membrane part (micrometers^2 / s)\n"
-            << "\tDpe \t\tProduct diffusion coefficient of ferment part (micrometers^2 / s)\n"
-            << "\tDpm \t\tProduct diffusion coefficient of membrane part (micrometers^2 / s)\n"
-            << "\tC1 \t\tDegradation of substrate coefficient m(s^-1)\n"
-            << "\tC2 \t\tDegradation of product coefficient m(s^-1)\n"
-            << "\tVmax \t\tMaximum reaction speed in ferment part (mmol/(m^3 s))\n"
-            << "\tKm \t\tMichaelis constant (mol / m^3)\n"
-            << "\tS0 \t\tInitial substrate concentration (mol / m^3)\n"
-            << "\tL \t\tInitial exponential S parameter (int)\n"
-            << "\tne \t\tCount of electric current transfering electrons in electrode\n"
-
-            << std::endl;
-}
+#define OPEN_MPI_MANAGER_ID 0
 
 int main(int argc, char *argv[]) {
 
-    // Retrieving parameters
-    grid_parameters grid_params;
-    model_parameters model_params;
-
-    if (argc == 1) {
-        std::cout << "-- Demo Mode --\n"
-                  << "To see the manual run biosensor-modeling -h" << std::endl;
-        grid_params = getDemoGridParameters();
-        model_params = getDemoModelParameters();
-
-    } else if (argc == ALL_ARG_COUNT) {
-        grid_params = parseGridParameters(argc, argv);
-        model_params = parseModelParameters(argc, argv);
-
-    } else if (argc == C_ARG_COUNT) {
-        grid_params = getDemoGridParameters();
-        model_params = getDemoModelParameters();
-        model_params.C1 = atof(argv[1]) * pow(10, -3);
-        model_params.C2 = atof(argv[2]) * pow(10, -3);
-
-    } else {
-        show_usage();
-        return 0;
-    }
-
-    std::cout << grid_params.toString() << std::endl;
-    std::cout << model_params.toString() << std::endl;
-
-
-    // OpenMPI
+    // OpenMPI setup
 
     int processors_count;
     int processor_id;
@@ -87,52 +28,76 @@ int main(int argc, char *argv[]) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &processor_id);
     MPI_Comm_size(MPI_COMM_WORLD, &processors_count);
+    MPI_Barrier(MPI_COMM_WORLD);
 
     std::cout << "Processors count: " << processors_count << std::endl;
     std::cout << "Processor id: " << processor_id << std::endl;
 
-    // Checking system information
 
-    int mp = getMachinePrecision();
-    std::cout.precision(mp);
-    std::cout << "Machine precision: " << mp << std::endl;
-    std::cout << "Size of double: " << sizeof(double) << std::endl;
+    // Calculation parameters
+    int mp;
+    double delta;
+    grid_parameters grid_params;
+    model_parameters model_params;
+    values_net_params field_params;
+    std::vector<double> x;
+    std::vector<double> t;
+    std::vector<double> f;
+    std::vector<double> g;
+    std::vector<double> alpha;
+    std::vector<double> D_s;
+    std::vector<double> D_p;
+    double C1[NODES] = {0.02, 0.03, 0.04};
+    double C2[NODES] = {0.1, 0.2, 0.3};
 
-    double delta = pow(10.0, -mp / 2);
-    std::cout << "Delta: " << delta << std::endl;
+    // Calculation results
+    double I[NODES];
+    double T[NODES];
+
+
+    // Retrieving parameters
+    std::cout << processor_id << " Arguments count" << argc << std::endl;
+    if (argc == 1) {
+        grid_params = getDemoGridParameters();
+        model_params = getDemoModelParameters();
+
+    } else if (argc == ALL_ARG_COUNT) {
+        grid_params = parseGridParameters(argc, argv);
+        model_params = parseModelParameters(argc, argv);
+
+    } else {
+        std::cout << "Invalid usage" << std::endl;
+        return 0;
+    }
+
+    // Gathering system info
+    mp = getMachinePrecision();
+    delta = pow(10.0, -mp / 2);
 
 
     // Creating x and t values field
+    field_params = getNonLinearValuesNetParams(grid_params.d_e, grid_params.d_m, grid_params.N_b);
 
-    std::cout << "Generating x values" << std::endl;
-    values_net_params field_params = getNonLinearValuesNetParams(grid_params.d_e, grid_params.d_m, grid_params.N_b);
-    std::cout << "q: " << field_params.q << std::endl;
-
-    std::vector<double> x = generateNonLinearValuesNet(field_params);
-    int n = x.size();
-    std::cout << "Done, x values size: " << n << std::endl;
-
-    std::cout << "Generating t values" << std::endl;
-    std::vector<double> t = getTimeIntervals(grid_params.T, grid_params.M, -mp);
-    std::cout << "Done, t values size: " << t.size() << std::endl;
-
+    x = generateNonLinearValuesNet(field_params);
+    t = getTimeIntervals(grid_params.T, grid_params.M, -mp);
 
     // Other model parameters
 
-    std::cout << "Generating f, g, alpha, D_s, D_p values" << std::endl;
-    std::vector<double> f = getZeroVector(n);
-    std::vector<double> g = f;
+    f = getZeroVector(x.size());
+    g = f;
 
     std::pair<int, int> de_dm_lengths = get_de_dm_segments_lengths(field_params);
-    std::vector<double> alpha = get_alpha(de_dm_lengths.first, de_dm_lengths.second);
+    alpha = get_alpha(de_dm_lengths.first, de_dm_lengths.second);
 
-    std::vector<double> D_s = get_D(alpha, model_params.Dse, model_params.Dsm);
-    std::vector<double> D_p = get_D(alpha, model_params.Dpe, model_params.Dpm);
+    D_s = get_D(alpha, model_params.Dse, model_params.Dsm);
+    D_p = get_D(alpha, model_params.Dpe, model_params.Dpm);
+
+    MPI_Barrier(MPI_COMM_WORLD);
 
 
     // Approximation
 
-    std::cout << "Approximating I..." << std::endl;
+    std::cout << processor_id << " Approximating I..." << std::endl;
     time_t t1 = time(NULL);
 
     std::pair<double, double> I_t = approximate_I(
@@ -145,16 +110,38 @@ int main(int argc, char *argv[]) {
             g,
             grid_params,
             model_params,
+            C1[processor_id],
+            C2[processor_id],
             field_params.q,
             delta
     );
 
+    std::cout << processor_id << " I approximation finished in " << difftime(time(NULL), t1) << "s" << std::endl;
+
+    int result_cnt = 1;
+    double res_I [result_cnt] = {I_t.first};
+    double res_T [result_cnt] = {I_t.second};
+
+    MPI_Gather(
+            res_I, result_cnt, MPI_DOUBLE,
+            I, NODES, MPI_DOUBLE,
+            OPEN_MPI_MANAGER_ID, MPI_COMM_WORLD
+    );
+
+    MPI_Gather(
+            res_T, result_cnt, MPI_DOUBLE,
+            T, NODES, MPI_DOUBLE,
+            OPEN_MPI_MANAGER_ID, MPI_COMM_WORLD
+    );
+
+
     // Results
 
-    std::cout << "I approximation finished in " << difftime(time(NULL), t1) << "s" << std::endl;
-    std::cout
-            << "I = " << I_t.first << " A m^(-2),"
-            << " t* = " << I_t.second << " s" << std::endl;
+    if (processor_id == OPEN_MPI_MANAGER_ID) {
+        for (unsigned i; i < NODES; i++) {
+            std::cout << i << " I = " << I[i] << " A m^(-2), t* = " << T[i] << " s" << std::endl;
+        }
+    }
 
     MPI_Finalize();
     return 0;

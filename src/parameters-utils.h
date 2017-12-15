@@ -43,8 +43,6 @@ struct model_parameters {
     double Dsm;
     double Dpe;
     double Dpm;
-    double C1;
-    double C2;
     double Vmax;
     double Km;
     double S0;
@@ -58,8 +56,6 @@ struct model_parameters {
             double _Dsm,
             double _Dpe,
             double _Dpm,
-            double _C1,
-            double _C2,
             double _Vmax,
             double _Km,
             double _S0,
@@ -70,8 +66,6 @@ struct model_parameters {
         Dsm = _Dsm * pow(10, -12);
         Dpe = _Dpe * pow(10, -12);
         Dpm = _Dpm * pow(10, -12);
-        C1 = _C1 * pow(10, -3);
-        C2 = _C2 * pow(10, -3);
         Vmax = _Vmax;
         Km = _Km;
         S0 = _S0;
@@ -85,8 +79,6 @@ struct model_parameters {
                + "Dsm=0.000000" + (std::to_string(Dsm * pow(10, 6)).substr(2, 9)) + ", "
                + "Dpe=0.000000" + (std::to_string(Dpe * pow(10, 6)).substr(2, 9)) + ", "
                + "Dpm=0.000000" + (std::to_string(Dpm * pow(10, 6)).substr(2, 9)) + ", "
-               + "C1=" + std::to_string(C1) + ", "
-               + "C2=" + std::to_string(C2) + ", "
                + "Vmax=" + std::to_string(Vmax) + ", "
                + "Km=" + std::to_string(Km) + ", "
                + "S0=" + std::to_string(S0) + ", "
