@@ -1,3 +1,4 @@
+#include "mpi.h"
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -12,7 +13,8 @@
 #include "approximations.h"
 
 
-#define ARG_COUNT 1+5+11
+#define ALL_ARG_COUNT 1+5+11
+#define C_ARG_COUNT 1+2
 
 
 static void show_usage() {
@@ -35,8 +37,8 @@ static void show_usage() {
             << "\tDsm \t\tSubstrate diffusion coefficient of membrane part (micrometers^2 / s)\n"
             << "\tDpe \t\tProduct diffusion coefficient of ferment part (micrometers^2 / s)\n"
             << "\tDpm \t\tProduct diffusion coefficient of membrane part (micrometers^2 / s)\n"
-            << "\tC1 \t\tDegradation of substrate coefficient (s^-1)\n"
-            << "\tC2 \t\tDegradation of product coefficient (s^-1)\n"
+            << "\tC1 \t\tDegradation of substrate coefficient m(s^-1)\n"
+            << "\tC2 \t\tDegradation of product coefficient m(s^-1)\n"
             << "\tVmax \t\tMaximum reaction speed in ferment part (mmol/(m^3 s))\n"
             << "\tKm \t\tMichaelis constant (mol / m^3)\n"
             << "\tS0 \t\tInitial substrate concentration (mol / m^3)\n"
@@ -58,9 +60,15 @@ int main(int argc, char *argv[]) {
         grid_params = getDemoGridParameters();
         model_params = getDemoModelParameters();
 
-    } else if (argc == ARG_COUNT) {
+    } else if (argc == ALL_ARG_COUNT) {
         grid_params = parseGridParameters(argc, argv);
         model_params = parseModelParameters(argc, argv);
+
+    } else if (argc == C_ARG_COUNT) {
+        grid_params = getDemoGridParameters();
+        model_params = getDemoModelParameters();
+        model_params.C1 = atof(argv[1]) * pow(10, -3);
+        model_params.C2 = atof(argv[2]) * pow(10, -3);
 
     } else {
         show_usage();
@@ -70,6 +78,18 @@ int main(int argc, char *argv[]) {
     std::cout << grid_params.toString() << std::endl;
     std::cout << model_params.toString() << std::endl;
 
+
+    // OpenMPI
+
+    int processors_count;
+    int processor_id;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &processor_id);
+    MPI_Comm_size(MPI_COMM_WORLD, &processors_count);
+
+    std::cout << "Processors count: " << processors_count << std::endl;
+    std::cout << "Processor id: " << processor_id << std::endl;
 
     // Checking system information
 
@@ -136,6 +156,7 @@ int main(int argc, char *argv[]) {
             << "I = " << I_t.first << " A m^(-2),"
             << " t* = " << I_t.second << " s" << std::endl;
 
+    MPI_Finalize();
     return 0;
 }
 

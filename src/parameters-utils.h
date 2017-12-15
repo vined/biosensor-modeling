@@ -70,8 +70,8 @@ struct model_parameters {
         Dsm = _Dsm * pow(10, -12);
         Dpe = _Dpe * pow(10, -12);
         Dpm = _Dpm * pow(10, -12);
-        C1 = _C1;
-        C2 = _C2;
+        C1 = _C1 * pow(10, -3);
+        C2 = _C2 * pow(10, -3);
         Vmax = _Vmax;
         Km = _Km;
         S0 = _S0;
