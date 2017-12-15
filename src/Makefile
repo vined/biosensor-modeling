@@ -1,4 +1,4 @@
-
+#CXX = mpicc
 CXXFLAGS = -std=c++11
 
 objects = main.o \
