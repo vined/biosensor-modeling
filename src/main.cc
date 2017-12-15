@@ -61,11 +61,10 @@ int main(int argc, char *argv[]) {
 
     // Other model parameters
 
-    std::cout << "Generating f, g values" << std::endl;
+    std::cout << "Generating f, g, alpha, D_s, D_p values" << std::endl;
     std::vector<double> f = getZeroVector(n);
     std::vector<double> g = f;
 
-    std::cout << "Generating alpha, D_s, D_p values" << std::endl;
     std::pair<int, int> de_dm_lengths = get_de_dm_segments_lengths(field_params);
     std::vector<double> alpha = get_alpha(de_dm_lengths.first, de_dm_lengths.second);
 
@@ -78,7 +77,7 @@ int main(int argc, char *argv[]) {
     std::cout << "Approximating I..." << std::endl;
     time_t t1 = time(NULL);
 
-    std::vector<double> I = approximate_I(
+    std::pair<double, double> I_t = approximate_I(
             x,
             t,
             D_s,
@@ -88,18 +87,16 @@ int main(int argc, char *argv[]) {
             g,
             params,
             field_params.q,
-            delta
+            delta,
+            true
     );
-
-    std::cout << "I approximation finished in " << difftime(time(NULL), t1) << "s, exporting results..." << std::endl;
-    std::cout << "I size: " << I.size() << std::endl;
-
 
     // Results
 
-    // Todo: Calculate i over time
-
-    exportMultiVector("I", {"t", "I"}, {t, I}, mp);
+    std::cout << "I approximation finished in " << difftime(time(NULL), t1) << "s" << std::endl;
+    std::cout
+            << "I = " << I_t.first << " A m^(-2),"
+            << " t* = " << I_t.second << " s" << std::endl;
 
     return 0;
 }

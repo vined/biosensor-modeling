@@ -1,9 +1,10 @@
 #include <vector>
+#include <utility>
 
 #include "parameters-utils.h"
 
 
-std::vector<double> approximate_I(
+std::pair<double, double> approximate_I(
         std::vector<double> x,
         std::vector<double> t,
         std::vector<double> D_s,
@@ -13,5 +14,6 @@ std::vector<double> approximate_I(
         std::vector<double> g,
         parameters params,
         double q,
-        double delta
+        double delta,
+        bool exportVectors
 );

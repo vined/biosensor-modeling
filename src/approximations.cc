@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+#include <utility>
 
 #include "approximations-utils.h"
 #include "s-approximations.h"
@@ -22,7 +23,7 @@ double getCurrentTimeDerivative(
 
     double a1 = (t3 - t2) / (t1 - t2) * (t1 - t3);
     double a2 = (t3 - t1) / (t2 - t1) * (t2 - t3);
-    double a3 = (2 * t3 - t1 -t2) / (t3 - t1) * (t3 - t2);
+    double a3 = (2 * t3 - t1 - t2) / (t3 - t1) * (t3 - t2);
 
     double cd = a1 * i1 + a2 * i2 + a3 * i3;
 
@@ -34,7 +35,7 @@ double getCurrentTimeDerivative(
     return cd;
 }
 
-std::vector<double> approximate_I(
+std::pair<double, double> approximate_I(
         std::vector<double> x,
         std::vector<double> t,
         std::vector<double> D_s,
@@ -44,7 +45,8 @@ std::vector<double> approximate_I(
         std::vector<double> g,
         parameters params,
         double q,
-        double delta
+        double delta,
+        bool exportVectors
 ) {
     double p0 = (x[1] + x[2]) / (x[1] * x[2]);
     double p1 = x[2] / (x[1] * (x[2] - x[1]));
@@ -55,16 +57,11 @@ std::vector<double> approximate_I(
     std::vector<double> itks;
     itks.push_back(0.0);
 
-    // S initial values
+    // S and P initial values
     std::vector<double> S_k = getExponentialS0(params.S0, params.d_e + params.d_m, params.L, x);
-    exportMultiVector("Sk0", {"x", "S"}, {x, S_k}, 15);
-
-    // P initial values
     std::vector<double> P_k = getZeroVector(x.size());
 
-    // Current density initial values
-    double ts = 0;
-    double is = 0;
+    // Current density initial value
     double max_itk = 0;
 
     // To optimize calculations, a, b, c for S and P will be recalculated only when t_step is changing
@@ -113,32 +110,38 @@ std::vector<double> approximate_I(
 
 
         // Calculate current near electrode
-        I.push_back(
-                params.ne * F * D_p[0] * (-(p0 * P_k[0]) + (p1 * P_k[1]) - (p2 * P_k[2]))
-        );
+        double it = params.ne * F * D_p[0] * (-(p0 * P_k[0]) + (p1 * P_k[1]) - (p2 * P_k[2]));
+        I.push_back(it);
 
 
         if (i > 0) {
-//            double itk = getCurrentTimeDerivative(
-//                    t[i-2], t[i-1], t[i],
-//                    I[i-2], I[1-1], I[i]
-//            );
-            double itk = (I[i]-I[i-1]) / t_step;
+            double itk = (I[i] - I[i - 1]) / t_step;
+            itks.push_back(itk);
+
+            if (itk < 0) {
+                std::cout << "Current density is not increasing monotonically" << std::endl;
+                throw 400;
+            }
 
             if (itk > max_itk) {
                 max_itk = itk;
             }
 
-            itks.push_back(itk);
-        }
 
+            if (itk / max_itk < 0.001) {
 
-        if (i == t.size() - 2) {
-            exportMultiVector("S", {"x", "S"}, {x, S_k}, 15);
-            exportMultiVector("P", {"x", "P"}, {x, P_k}, 15);
+                if (exportVectors) {
+                    exportMultiVector("S", {"x", "S"}, {x, S_k}, 15);
+                    exportMultiVector("P", {"x", "P"}, {x, P_k}, 15);
+
+                    exportMultiVector("It", {"t", "i'"}, {t, itks}, 15);
+                    exportMultiVector("I", {"t", "I"}, {t, I}, 15);
+                }
+
+                return std::pair<double, double>(it, t[i]);
+            }
         }
     }
 
-    exportMultiVector("It", {"t", "i'"}, {t, itks}, 15);
-    return I;
+    return std::pair<double, double>(0.0, 0.0);
 }
