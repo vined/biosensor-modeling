@@ -5,7 +5,6 @@
 
 #include "s-approximations.h"
 #include "approximations-utils.h"
-#include "output-utils.h"
 
 
 #define MAX_ITERATIONS 20

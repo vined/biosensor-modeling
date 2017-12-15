@@ -10,7 +10,6 @@
 #include "s-approximations.h"
 #include "p-approximations.h"
 #include "approximations.h"
-#include "output-utils.h"
 #include "parameters-utils.h"
 
 
@@ -43,10 +42,10 @@ std::pair<double, double> approximate_I(
         std::vector<double> alpha,
         std::vector<double> f,
         std::vector<double> g,
-        parameters params,
+        grid_parameters grid_params,
+        model_parameters params,
         double q,
-        double delta,
-        bool exportVectors
+        double delta
 ) {
     double p0 = (x[1] + x[2]) / (x[1] * x[2]);
     double p1 = x[2] / (x[1] * (x[2] - x[1]));
@@ -58,7 +57,7 @@ std::pair<double, double> approximate_I(
     itks.push_back(0.0);
 
     // S and P initial values
-    std::vector<double> S_k = getExponentialS0(params.S0, params.d_e + params.d_m, params.L, x);
+    std::vector<double> S_k = getExponentialS0(params.S0, grid_params.d_e + grid_params.d_m, params.L, x);
     std::vector<double> P_k = getZeroVector(x.size());
 
     // Current density initial value
@@ -129,15 +128,6 @@ std::pair<double, double> approximate_I(
 
 
             if (itk / max_itk < 0.001) {
-
-                if (exportVectors) {
-                    exportMultiVector("S", {"x", "S"}, {x, S_k}, 15);
-                    exportMultiVector("P", {"x", "P"}, {x, P_k}, 15);
-
-                    exportMultiVector("It", {"t", "i'"}, {t, itks}, 15);
-                    exportMultiVector("I", {"t", "I"}, {t, I}, 15);
-                }
-
                 return std::pair<double, double>(it, t[i]);
             }
         }

@@ -12,8 +12,8 @@ std::pair<double, double> approximate_I(
         std::vector<double> alpha,
         std::vector<double> f,
         std::vector<double> g,
-        parameters params,
+        grid_parameters grid_params,
+        model_parameters params,
         double q,
-        double delta,
-        bool exportVectors
+        double delta
 );

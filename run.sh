@@ -11,4 +11,4 @@ mv biosensor-modeling ../
 cd ../
 
 echo ------------------ Running -------------------
-./biosensor-modeling params.txt
+./biosensor-modeling

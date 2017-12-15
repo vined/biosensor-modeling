@@ -1,11 +1,10 @@
-#CXX = mpicc
+CXX = mpicxx
 CXXFLAGS = -std=c++11
 
 objects = main.o \
     exponent-intervals.o values-range.o values-net.o time-intervals.o \
     parameters-utils.o machine-precision.o \
-    s-approximations.o p-approximations.o approximations-utils.o approximations.o \
-    output-utils.o
+    s-approximations.o p-approximations.o approximations-utils.o approximations.o
 
 biosensor-modeling: $(objects)
 	$(CXX) $(CXXFLAGS) $(objects) -o biosensor-modeling
@@ -17,7 +16,6 @@ values-net.o: values-net.h
 time-intervals.o: time-intervals.h
 machine-precision.o: machine-precision.h
 parameters-utils.o: parameters-utils.h
-output-utils.o: output-utils.h
 approximations-utils.o: approximations-utils.h
 s-approximations.o: s-approximations.h
 p-approximations.o: p-approximations.h

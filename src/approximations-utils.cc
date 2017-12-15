@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "approximations-utils.h"
-#include "output-utils.h"
 
 
 double getProgress(std::vector<double> y_new, std::vector<double> y_old) {
