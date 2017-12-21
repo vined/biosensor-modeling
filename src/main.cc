@@ -34,7 +34,8 @@ int main(int argc, char *argv[]) {
     std::cout << "Processor id: " << processor_id << std::endl;
 
 
-    // Calculation parameters
+    // Modeling parameters
+
     int mp;
     double delta;
     grid_parameters grid_params;
@@ -50,23 +51,46 @@ int main(int argc, char *argv[]) {
     double C1[NODES] = {0.02, 0.025, 0.03};
     double C2[NODES] = {0.005, 0.01, 0.019};
 
+
     // Calculation results
+
     double I[NODES];
     double T[NODES];
 
 
+    // Reading parameters
+
+    MPI_File c_data;
+
+    std::cout << "Reading file: " << argv[2] << std::endl;
+    int ierr = MPI_File_open(MPI_COMM_WORLD, argv[2], MPI_MODE_RDONLY, MPI_INFO_NULL, &c_data);
+    if (ierr) {
+        std::cout << "Couldn't open file "<< argv[2] << endl;
+        MPI_Finalize();
+        return 1;
+    }
+
+    MPI_Offset offset;
+    MPI_File_get_size(c_data, &offset);
+
+    int filesSize = offset / sizeof(int);
+    std::cout << "File size: " << filesSize << std::endl;
+
+    MPI_File_close(&c_data);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+
     // Retrieving parameters
+
     std::cout << processor_id << " Arguments count" << argc << std::endl;
-    if (argc == 1) {
+    if (argc == 3) {
         grid_params = getDemoGridParameters();
         model_params = getDemoModelParameters();
 
-    } else if (argc == ALL_ARG_COUNT) {
-        grid_params = parseGridParameters(argc, argv);
-        model_params = parseModelParameters(argc, argv);
-
     } else {
         std::cout << "Invalid usage" << std::endl;
+        std::cout << "Usage: biosensor-modeling parameters-file c-data-file" << std::endl;
         return 0;
     }
 
@@ -131,7 +155,7 @@ int main(int argc, char *argv[]) {
             OPEN_MPI_MANAGER_ID, MPI_COMM_WORLD
     );
 
-    MPI_Barrier( MPI_COMM_WORLD );
+    MPI_Barrier(MPI_COMM_WORLD);
 
     // Results
 
@@ -141,6 +165,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
     return 0;
 }
