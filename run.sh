@@ -10,5 +10,5 @@ mv biosensor-modeling ../
 cd ../
 
 echo ------------------ Running -------------------
-mpirun biosensor-modeling params.data C.data
+mpirun biosensor-modeling C1.data C2.data
 

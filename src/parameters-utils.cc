@@ -88,3 +88,32 @@ std::vector<double> get_D(std::vector<double> alpha, double D_e, double D_m) {
 
     return D;
 }
+
+int getLinesCount(char *buf, int size) {
+
+    unsigned count = 0;
+    for (unsigned i = 0; i < size; i++) {
+        if (buf[i] == '\n') {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+void readDoubles(char *buf, int size, double *out) {
+
+    int j = 0;
+    std::string d_str = "";
+
+    for (unsigned i = 0; i < size; i++) {
+        char c = buf[i];
+        if (c == '\n') {
+            out[j] = std::stod(d_str);
+            d_str = "";
+            j++;
+        } else {
+            d_str.append(1, c);
+        }
+    }
+}
