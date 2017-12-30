@@ -16,7 +16,7 @@
 
 #define ALL_ARG_COUNT 1+5+9
 
-#define OPEN_MPI_MANAGER_ID 0
+#define MANAGER_ID 0
 
 int main(int argc, char *argv[]) {
 
@@ -29,8 +29,9 @@ int main(int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &processor_id);
     MPI_Comm_size(MPI_COMM_WORLD, &processors_count);
 
-    std::cout << "Processors count: " << processors_count << std::endl;
-    std::cout << "Processor id: " << processor_id << std::endl;
+    if (processor_id == MANAGER_ID) {
+        std::cout << "Processors count: " << processors_count << std::endl;
+    }
 
 
     // Modeling parameters
@@ -68,6 +69,7 @@ int main(int argc, char *argv[]) {
     } else {
         std::cout << "Invalid usage" << std::endl;
         std::cout << "Usage: biosensor-modeling c1-data-file c2-data-file" << std::endl;
+        MPI_Finalize();
         return 0;
     }
 
@@ -102,21 +104,23 @@ int main(int argc, char *argv[]) {
 
     C1 = (double *) malloc(c_size);
     readDoublesFromFile(argv[1], C1);
+    if (processor_id == MANAGER_ID) {
+        for (unsigned i = 0; i < c_size; i++) {
+            std::cout << processor_id << " C1 " << C1[i] << std::endl;
+        }
+    }
 
     MPI_Barrier(MPI_COMM_WORLD);
-    for (int i = 0; i < c_size; i++) {
-        std::cout << C1[i] << std::endl;
+
+    C2 = (double *) malloc(c_size);
+    readDoublesFromFile(argv[2], C2);
+
+    if (processor_id == MANAGER_ID) {
+        for (unsigned i = 0; i < c_size; i++) {
+            std::cout << processor_id << " C2 " << C2[i] << std::endl;
+        }
     }
     MPI_Barrier(MPI_COMM_WORLD);
-
-//    C2 = (double *) malloc(c_size);
-//    readDoublesFromFile(argv[2], C2);
-
-//    MPI_Barrier(MPI_COMM_WORLD);
-//    for (unsigned i = 0; i < c_size; i++) {
-//        std::cout << processor_id << "C1 " << C1[i] << "\tC2 " << C2[i] << std::endl;
-//    }
-//    MPI_Barrier(MPI_COMM_WORLD);
 
 
     // Approximation
@@ -148,20 +152,20 @@ int main(int argc, char *argv[]) {
     MPI_Gather(
             &I_t.first, 1, MPI_DOUBLE,
             I, 1, MPI_DOUBLE,
-            OPEN_MPI_MANAGER_ID, MPI_COMM_WORLD
+            MANAGER_ID, MPI_COMM_WORLD
     );
 
     MPI_Gather(
             &I_t.second, 1, MPI_DOUBLE,
             T, 1, MPI_DOUBLE,
-            OPEN_MPI_MANAGER_ID, MPI_COMM_WORLD
+            MANAGER_ID, MPI_COMM_WORLD
     );
 
     MPI_Barrier(MPI_COMM_WORLD);
 
     // Results
 
-    if (processor_id == OPEN_MPI_MANAGER_ID) {
+    if (processor_id == MANAGER_ID) {
         for (unsigned i; i < processors_count; i++) {
             std::cout << i << " I = " << I[i] << " A m^(-2), t* = " << T[i] << " s" << std::endl;
         }
