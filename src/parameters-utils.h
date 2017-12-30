@@ -98,8 +98,4 @@ std::vector<double> get_alpha(int de_length, int dm_length);
 
 std::vector<double> get_D(std::vector<double> alpha, double D_e, double D_m);
 
-int getLinesCount(char *buf, int size);
-
-void readDoubles(char *buf, int size, double *out);
-
 #endif //BIOSENSOR_MODELING_PARAMETERS_UTILS_H

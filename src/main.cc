@@ -10,6 +10,7 @@
 #include "time-intervals.h"
 #include "approximations-utils.h"
 #include "parameters-utils.h"
+#include "file-utils.h"
 #include "approximations.h"
 
 
@@ -27,7 +28,6 @@ int main(int argc, char *argv[]) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &processor_id);
     MPI_Comm_size(MPI_COMM_WORLD, &processors_count);
-    MPI_Barrier(MPI_COMM_WORLD);
 
     std::cout << "Processors count: " << processors_count << std::endl;
     std::cout << "Processor id: " << processor_id << std::endl;
@@ -48,15 +48,15 @@ int main(int argc, char *argv[]) {
     std::vector<double> D_s;
     std::vector<double> D_p;
 
-    int c_size = 3;
-    double C1[c_size] = {0.02, 0.025, 0.03};
-    double C2[c_size] = {0.005, 0.005, 0.005};
+    int c_size;
+    double *C1;
+    double *C2;
 
 
     // Calculation results
 
-    double I[c_size];
-    double T[c_size];
+    double *I;
+    double *T;
 
 
     // Retrieving parameters
@@ -83,7 +83,6 @@ int main(int argc, char *argv[]) {
     t = getTimeIntervals(grid_params.T, grid_params.M, -mp);
 
     // Other model parameters
-
     f = getZeroVector(x.size());
     g = f;
 
@@ -93,39 +92,31 @@ int main(int argc, char *argv[]) {
     D_s = get_D(alpha, model_params.Dse, model_params.Dsm);
     D_p = get_D(alpha, model_params.Dpe, model_params.Dpm);
 
+
+    // Read C
+
+    c_size = getFileLinesCount(argv[1]);
+    std::cout << processor_id << "C size " << c_size << std::endl;
+
     MPI_Barrier(MPI_COMM_WORLD);
 
+    C1 = (double *) malloc(c_size);
+    readDoublesFromFile(argv[1], C1);
 
-    // Read C1
-
-    if (processor_id == OPEN_MPI_MANAGER_ID) {
-        MPI_File c1_data;
-        int ierr1 = MPI_File_open(MPI_COMM_WORLD, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &c1_data);
-//        if (ierr1) {
-//            std::cout << "Couldn't open file " << argv[1] << endl;
-//            MPI_Finalize();
-//            return 1;
-//        }
-
-//        MPI_Offset offset;
-//        MPI_File_get_size(c1_data, &offset);
-//        int fileSize = offset / sizeof(char);
-//        char *buf1 = (char *) malloc(fileSize);
-//
-//        MPI_File_read(c1_data, buf1, fileSize, MPI_CHAR, MPI_STATUS_IGNORE);
-//
-//        int c1_size = getLinesCount(buf1, fileSize);
-//        std::cout << "size " << c1_size << std::endl;
-//        double *c1 = (double *) malloc(c1_size);
-//        readDoubles(buf1, fileSize, c1);
-//        free(c1);
-//
-//        free(buf1);
-//        MPI_File_close(&c1_data);
+    MPI_Barrier(MPI_COMM_WORLD);
+    for (int i = 0; i < c_size; i++) {
+        std::cout << C1[i] << std::endl;
     }
-
-
     MPI_Barrier(MPI_COMM_WORLD);
+
+//    C2 = (double *) malloc(c_size);
+//    readDoublesFromFile(argv[2], C2);
+
+//    MPI_Barrier(MPI_COMM_WORLD);
+//    for (unsigned i = 0; i < c_size; i++) {
+//        std::cout << processor_id << "C1 " << C1[i] << "\tC2 " << C2[i] << std::endl;
+//    }
+//    MPI_Barrier(MPI_COMM_WORLD);
 
 
     // Approximation
