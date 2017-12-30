@@ -95,31 +95,31 @@ int main(int argc, char *argv[]) {
     D_p = get_D(alpha, model_params.Dpe, model_params.Dpm);
 
 
-    // Read C
+    // Read C size
 
     c_size = getFileLinesCount(argv[1]);
-    std::cout << processor_id << "C size " << c_size << std::endl;
 
     MPI_Barrier(MPI_COMM_WORLD);
 
     C1 = (double *) malloc(c_size);
-    readDoublesFromFile(argv[1], C1);
-    if (processor_id == MANAGER_ID) {
-        for (unsigned i = 0; i < c_size; i++) {
-            std::cout << processor_id << " C1 " << C1[i] << std::endl;
-        }
-    }
-
-    MPI_Barrier(MPI_COMM_WORLD);
-
     C2 = (double *) malloc(c_size);
+    I = (double *) malloc(c_size);
+    T = (double *) malloc(c_size);
+
+
+    // Read C values
+
+    readDoublesFromFile(argv[1], C1);
+
+    //MPI_Barrier(MPI_COMM_WORLD);
+
     readDoublesFromFile(argv[2], C2);
 
-    if (processor_id == MANAGER_ID) {
+    MPI_Barrier(MPI_COMM_WORLD);
         for (unsigned i = 0; i < c_size; i++) {
             std::cout << processor_id << " C2 " << C2[i] << std::endl;
         }
-    }
+
     MPI_Barrier(MPI_COMM_WORLD);
 
 

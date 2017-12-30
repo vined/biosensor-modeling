@@ -75,7 +75,9 @@ int getFileLinesCount(char *fileName) {
 void readDoublesFromFile(char *fileName, double *out) {
 
     MPI_File file;
+            std::cout << "File name: " << fileName << std::endl;
     openFile(fileName, &file);
+            std::cout << "File opened " << std::endl;
 
     int fileSize = getFileSize(file);
     char *buf = (char *) malloc(fileSize);
