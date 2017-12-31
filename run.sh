@@ -1,6 +1,6 @@
 #!/bin/sh
 #SBATCH -p short
-#SBATCH -n4
+#SBATCH -n3
 rm biosensor-modeling
 echo ------------------ Building -------------------
 cd src
