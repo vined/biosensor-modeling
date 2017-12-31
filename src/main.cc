@@ -154,7 +154,6 @@ int main(int argc, char *argv[]) {
     double *proc_I = (double *) malloc(c_length);
     double *proc_T = (double *) malloc(c_length);
 
-    std::cout << processor_id << " Approximating..." << std::endl;
     for (unsigned i = 0; i < c_length; i++) {
 
         time_t t1 = time(NULL);
@@ -177,6 +176,7 @@ int main(int argc, char *argv[]) {
 
         proc_I[i] = I_t.first;
         proc_T[i] = I_t.second;
+        std::cout << processor_id << " Approximation result I: " << I_t.first << " T:" << I_t.second << std::endl;
         std::cout << processor_id << " I approximation finished in " << difftime(time(NULL), t1) << "s" << std::endl;
     }
 
@@ -189,13 +189,13 @@ int main(int argc, char *argv[]) {
     double *T = (double *) malloc(params.C_count);
 
     MPI_Gatherv(
-            &proc_I, c_length, MPI_DOUBLE,
+            proc_I, c_length, MPI_DOUBLE,
             I, counts, displs, MPI_DOUBLE,
             MANAGER_ID, MPI_COMM_WORLD
     );
 
     MPI_Gatherv(
-            &proc_T, c_length, MPI_DOUBLE,
+            proc_T, c_length, MPI_DOUBLE,
             T, counts, displs, MPI_DOUBLE,
             MANAGER_ID, MPI_COMM_WORLD
     );
