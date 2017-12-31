@@ -1,10 +1,9 @@
-
-
 #ifndef BIOSENSOR_MODELING_FILE_UTILS_H
 #define BIOSENSOR_MODELING_FILE_UTILS_H
 
-int getFileLinesCount(char *fileName);
+#include <string>
+#include <vector>
 
-void readDoublesFromFile(char *fileName, double *out);
+std::vector<std::string> readFileLines(char *fileName);
 
 #endif //BIOSENSOR_MODELING_FILE_UTILS_H

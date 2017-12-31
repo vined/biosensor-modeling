@@ -21,70 +21,39 @@ int getFileSize(MPI_File file) {
     return offset / sizeof(char);
 }
 
-void readFile(MPI_File file, int fileSize, char *out) {
-
-    MPI_File_read(file, out, fileSize, MPI_CHAR, MPI_STATUS_IGNORE);
-}
-
-int getLinesCount(char *buf, int size) {
-    unsigned count = 0;
-    for (unsigned i = 0; i < size; i++) {
-        if (buf[i] == '\n') {
-            count++;
-        }
-    }
-
-    return count;
-}
-
-void readDoubles(char *buf, int size, double *out) {
+std::vector<std::string> readLines(char *buf, int size) {
 
     int j = 0;
     std::string d_str = "";
+    std::vector<std::string> lines;
 
     for (unsigned i = 0; i < size; i++) {
         char c = buf[i];
         if (c == '\n') {
-            out[j] = std::stod(d_str);
+            lines.push_back(d_str);
             d_str = "";
             j++;
         } else {
             d_str.append(1, c);
         }
     }
+
+    return lines;
 }
 
-
-int getFileLinesCount(char *fileName) {
+std::vector<std::string> readFileLines(char *fileName) {
 
     MPI_File file;
     openFile(fileName, &file);
 
     int fileSize = getFileSize(file);
     char *buf = (char *) malloc(fileSize);
-    readFile(file, fileSize, buf);
+    MPI_File_read(file, buf, fileSize, MPI_CHAR, MPI_STATUS_IGNORE);
 
-    int lines = getLinesCount(buf, fileSize);
+    std::vector<std::string> lines = readLines(buf, fileSize);
 
     MPI_File_close(&file);
     free(buf);
 
     return lines;
-}
-
-void readDoublesFromFile(char *fileName, double *out) {
-
-    MPI_File file;
-            std::cout << "File name: " << fileName << std::endl;
-    openFile(fileName, &file);
-            std::cout << "File opened " << std::endl;
-
-    int fileSize = getFileSize(file);
-    char *buf = (char *) malloc(fileSize);
-    readFile(file, fileSize, buf);
-
-    readDoubles(buf, fileSize, out);
-
-    MPI_File_close(&file);
-    free(buf);
 }

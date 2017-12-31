@@ -14,8 +14,6 @@
 #include "approximations.h"
 
 
-#define ALL_ARG_COUNT 1+5+9
-
 #define MANAGER_ID 0
 
 int main(int argc, char *argv[]) {
@@ -38,8 +36,7 @@ int main(int argc, char *argv[]) {
 
     int mp;
     double delta;
-    grid_parameters grid_params;
-    model_parameters model_params;
+    parameters params;
     values_net_params field_params;
     std::vector<double> x;
     std::vector<double> t;
@@ -49,125 +46,170 @@ int main(int argc, char *argv[]) {
     std::vector<double> D_s;
     std::vector<double> D_p;
 
-    int c_size;
-    double *C1;
-    double *C2;
 
+    // Read parameters
 
-    // Calculation results
-
-    double *I;
-    double *T;
-
-
-    // Retrieving parameters
-
-    if (argc == 3) {
-        grid_params = getDemoGridParameters();
-        model_params = getDemoModelParameters();
-
-    } else {
+    if (argc != 2 && processor_id == MANAGER_ID) {
         std::cout << "Invalid usage" << std::endl;
-        std::cout << "Usage: biosensor-modeling c1-data-file c2-data-file" << std::endl;
+        std::cout << "Usage: biosensor-modeling parameters-file" << std::endl;
+        std::cout << "Check example in params.data" << std::endl;
         MPI_Finalize();
         return 0;
     }
 
+    std::vector <std::string> unparsed_params = readFileLines(argv[1]);
+    params = readParameters(unparsed_params);
+
+    if (processor_id == MANAGER_ID) {
+        std::cout << params.toString() << std::endl;
+        for (unsigned i = 0; i < params.C_count; i++) {
+            std::cout << "C1 " << params.C1[i] << " \tC2 " << params.C2[i] << std::endl;
+        }
+    }
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+
     // Gathering system info
+
     mp = getMachinePrecision();
     delta = pow(10.0, -mp / 2);
 
 
-    // Creating x and t values field
-    field_params = getNonLinearValuesNetParams(grid_params.d_e, grid_params.d_m, grid_params.N_b);
+    // Creating model mesh
+
+    field_params = getNonLinearValuesNetParams(params.d_e, params.d_m, params.N_b);
 
     x = generateNonLinearValuesNet(field_params);
-    t = getTimeIntervals(grid_params.T, grid_params.M, -mp);
+    t = getTimeIntervals(params.T, params.M, -mp);
+
 
     // Other model parameters
+
     f = getZeroVector(x.size());
     g = f;
 
     std::pair<int, int> de_dm_lengths = get_de_dm_segments_lengths(field_params);
     alpha = get_alpha(de_dm_lengths.first, de_dm_lengths.second);
 
-    D_s = get_D(alpha, model_params.Dse, model_params.Dsm);
-    D_p = get_D(alpha, model_params.Dpe, model_params.Dpm);
-
-
-    // Read C size
-
-    c_size = getFileLinesCount(argv[1]);
+    D_s = get_D(alpha, params.Dse, params.Dsm);
+    D_p = get_D(alpha, params.Dpe, params.Dpm);
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-    C1 = (double *) malloc(c_size);
-    C2 = (double *) malloc(c_size);
-    I = (double *) malloc(c_size);
-    T = (double *) malloc(c_size);
 
+    // Splitting the load
 
-    // Read C values
+    int *counts = (int *) malloc(processors_count);
+    int *displs = (int *) malloc(processors_count);
 
-    readDoublesFromFile(argv[1], C1);
+    if (processor_id == MANAGER_ID) {
 
-    //MPI_Barrier(MPI_COMM_WORLD);
+        int size = params.C_count / processors_count;
+        int tail = params.C_count % processors_count;
 
-    readDoublesFromFile(argv[2], C2);
+        for (unsigned i = 0; i < processors_count; i++) {
 
-    MPI_Barrier(MPI_COMM_WORLD);
-        for (unsigned i = 0; i < c_size; i++) {
-            std::cout << processor_id << " C2 " << C2[i] << std::endl;
+            int cnt = size;
+            if (i < tail) cnt++;
+
+            counts[i] = cnt;
+
+            if (i == 0) {
+                displs[i] = 0;
+            } else {
+                displs[i] = displs[i - 1] + counts[i - 1];
+            }
         }
+    }
 
-    MPI_Barrier(MPI_COMM_WORLD);
+    int c_length;
+    MPI_Scatter(
+            counts, 1, MPI_INT,
+            &c_length, 1, MPI_INT,
+            MANAGER_ID, MPI_COMM_WORLD
+    );
+    std::cout << processor_id << " c_length " << c_length << std::endl;
+
+    double *C1 = (double *) malloc(c_length);
+    double *C2 = (double *) malloc(c_length);
+
+    MPI_Scatterv(
+            &params.C1[0], counts, displs, MPI_DOUBLE,
+            C1, c_length, MPI_DOUBLE,
+            MANAGER_ID, MPI_COMM_WORLD
+    );
+
+    MPI_Scatterv(
+            &params.C2[0], counts, displs, MPI_DOUBLE,
+            C2, c_length, MPI_DOUBLE,
+            MANAGER_ID, MPI_COMM_WORLD
+    );
 
 
     // Approximation
 
-    std::cout << processor_id << " Approximating I..." << std::endl;
-    time_t t1 = time(NULL);
+    MPI_Barrier(MPI_COMM_WORLD);
 
-    std::pair<double, double> I_t = approximate_I(
-            x,
-            t,
-            D_s,
-            D_p,
-            alpha,
-            f,
-            g,
-            grid_params,
-            model_params,
-            C1[processor_id],
-            C2[processor_id],
-            field_params.q,
-            delta
-    );
+    double *proc_I = (double *) malloc(c_length);
+    double *proc_T = (double *) malloc(c_length);
 
+    std::cout << processor_id << " Approximating..." << std::endl;
+    for (unsigned i = 0; i < c_length; i++) {
 
-    std::cout << processor_id << " I approximation finished in " << difftime(time(NULL), t1) << "s" << std::endl;
+        time_t t1 = time(NULL);
+        std::cout << processor_id << " Approximating I with C1=" << C1[i] << " and C2=" << C2[i] << "..." << std::endl;
+
+        std::pair<double, double> I_t = approximate_I(
+                x,
+                t,
+                D_s,
+                D_p,
+                alpha,
+                f,
+                g,
+                params,
+                C1[i],
+                C2[i],
+                field_params.q,
+                delta
+        );
+
+        proc_I[i] = I_t.first;
+        proc_T[i] = I_t.second;
+        std::cout << processor_id << " I approximation finished in " << difftime(time(NULL), t1) << "s" << std::endl;
+    }
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-    MPI_Gather(
-            &I_t.first, 1, MPI_DOUBLE,
-            I, 1, MPI_DOUBLE,
+
+    // Calculation results
+
+    double *I = (double *) malloc(params.C_count);
+    double *T = (double *) malloc(params.C_count);
+
+    MPI_Gatherv(
+            &proc_I, c_length, MPI_DOUBLE,
+            I, counts, displs, MPI_DOUBLE,
             MANAGER_ID, MPI_COMM_WORLD
     );
 
-    MPI_Gather(
-            &I_t.second, 1, MPI_DOUBLE,
-            T, 1, MPI_DOUBLE,
+    MPI_Gatherv(
+            &proc_T, c_length, MPI_DOUBLE,
+            T, counts, displs, MPI_DOUBLE,
             MANAGER_ID, MPI_COMM_WORLD
     );
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-    // Results
+
+    // Printing results
 
     if (processor_id == MANAGER_ID) {
-        for (unsigned i; i < processors_count; i++) {
-            std::cout << i << " I = " << I[i] << " A m^(-2), t* = " << T[i] << " s" << std::endl;
+        for (unsigned i; i < params.C_count; i++) {
+            std::cout << i << " I = " << I[i] << " A m^(-2), t* = " << T[i] << " s";
+            std::cout << i << " (C1 = " << params.C1[i] << " (s^-1), C2 = " << params.C2[i] << " (s^-1))";
+            std::cout << std::endl;
         }
     }
 

@@ -42,8 +42,7 @@ std::pair<double, double> approximate_I(
         std::vector<double> alpha,
         std::vector<double> f,
         std::vector<double> g,
-        grid_parameters grid_params,
-        model_parameters params,
+        parameters params,
         double C1,
         double C2,
         double q,
@@ -59,7 +58,7 @@ std::pair<double, double> approximate_I(
     itks.push_back(0.0);
 
     // S and P initial values
-    std::vector<double> S_k = getExponentialS0(params.S0, grid_params.d_e + grid_params.d_m, params.L, x);
+    std::vector<double> S_k = getExponentialS0(params.S0, params.d_e + params.d_m, params.L, x);
     std::vector<double> P_k = getZeroVector(x.size());
 
     // Current density initial value

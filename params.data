@@ -1,0 +1,57 @@
+# - Parameters description -
+# Parameters must be difined in the following order
+
+# Grid parameters:
+# de - Width of bio-sensor ferment part (micrometers)
+# dm - Width of bio-sensor membrane part (micrometers)
+# Nb - Density of bio-sensor width values (int)
+# T - Maximum model time (s)
+# M - Time steps count (int)
+
+# Model parameters
+# Dse - Substrate diffusion coefficient of ferment part (micrometers^2 / s)
+# Dsm - Substrate diffusion coefficient of membrane part (micrometers^2 / s)
+# Dpe - Product diffusion coefficient of ferment part (micrometers^2 / s)
+# Dpm - Product diffusion coefficient of membrane part (micrometers^2 / s)
+# Vmax - Maximum reaction speed in ferment part (mmol/(m^3 s))
+# Km - Michaelis constant (mol / m^3)
+# S0 - Initial substrate concentration (mol / m^3)
+# ne - Count of electric current transfering electrons in electrode (1 or 2)
+# C_size - Count of C1 and C2 constants
+
+# - Grid parameters -
+9       #d_e
+10      #d_m
+50      #N_b
+10      #T
+10000   #M
+
+# - Model parameters -
+22.0    #Dse
+7.0     #Dsm
+20.0    #Dpe
+6.0     #Dpm
+0.3     #Vmax
+0.23    #Km
+0.07    #S0
+100     #L
+1       #ne
+7       #C_size
+
+# - C1 values - Degradation of substrate coefficient (s^-1)
+0.02
+0.025
+0.03
+0.035
+0.04
+0.045
+0.05
+
+# - C2 values - Degradation of product coefficient (s^-1)
+0.005
+0.005
+0.005
+0.005
+0.005
+0.005
+0.005

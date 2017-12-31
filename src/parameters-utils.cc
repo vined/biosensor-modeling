@@ -1,68 +1,80 @@
-#include <fstream>
 #include <stdlib.h>
 #include <vector>
-
 
 #include "approximations-utils.h"
 #include "parameters-utils.h"
 
-// DEMO parameters
-grid_parameters getDemoGridParameters() {
-    return grid_parameters
+#define C_START 15
+
+
+std::vector<double> parseC(std::vector <std::string> argv, unsigned from, unsigned to) {
+    std::vector<double> C;
+
+    for (unsigned i = from; i < to; i++) {
+        C.push_back(std::stof(argv[i]));
+    }
+
+    return C;
+}
+
+parameters parseParameters(std::vector <std::string> argv) {
+    unsigned C_size = std::stoi(argv[14]);
+
+    std::vector<double> C1 = parseC(argv, C_START, C_START + C_size);
+    std::vector<double> C2 = parseC(argv, C_START + C_size, C_START + C_size * 2);
+
+    return parameters
             (
                     //Grid parameters
-                    9, // d_e
-                    10, // d_m
-                    50, // N_b
-                    30, // T
-                    10000 // M
-            );
-}
-
-model_parameters getDemoModelParameters() {
-    return model_parameters
-            (
+                    std::stof(argv[0]), // d_e
+                    std::stof(argv[1]), // d_m
+                    std::stoi(argv[2]), // N_b
+                    std::stoi(argv[3]), // T
+                    std::stoi(argv[4]),  // M
                     //Model parameters
-                    22.0, //Dse
-                    7.0, //Dsm
-                    20.0, //Dpe
-                    6.0, //Dpm
-                    0.3, //Vmax
-                    0.23, //Km
-                    0.07, //S0
-                    100, //L
-                    1 //ne
+                    std::stof(argv[5]), //Dse
+                    std::stof(argv[6]), //Dsm
+                    std::stof(argv[7]), //Dpe
+                    std::stof(argv[8]), //Dpm
+                    std::stof(argv[9]), //Vmax
+                    std::stof(argv[10]), //Km
+                    std::stof(argv[11]), //S0
+                    std::stoi(argv[12]), //L
+                    std::stoi(argv[13]), //ne
+                    C_size,
+                    C1,
+                    C2
             );
 }
 
-
-// Parameters parsers
-grid_parameters parseGridParameters(int argc, char *argv[]) {
-    return grid_parameters
-            (
-                    //Grid parameters
-                    atof(argv[1]), // d_e
-                    atof(argv[2]), // d_m
-                    atoi(argv[3]), // N_b
-                    atoi(argv[4]), // T
-                    atoi(argv[5])  // M
-            );
+bool isCommentOrEmpty(std::string line) {
+    return line.size() == 0 || line[0] == '#';
 }
 
-model_parameters parseModelParameters(int argc, char *argv[]) {
-    return model_parameters
-            (
-                    //Model parameters
-                    atof(argv[6]), //Dse
-                    atof(argv[7]), //Dsm
-                    atof(argv[8]), //Dpe
-                    atof(argv[9]), //Dpm
-                    atof(argv[10]), //Vmax
-                    atof(argv[11]), //Km
-                    atof(argv[12]), //S0
-                    atof(argv[13]), //S0
-                    atoi(argv[14])  //ne
+std::string getValue(std::string line) {
+
+    std::size_t pos = line.find_first_of(" #;,\t\n");
+
+    if (pos != std::string::npos) {
+        return line.substr(0, pos);
+    }
+    return line;
+}
+
+parameters readParameters(std::vector <std::string> lines) {
+
+    std::vector <std::string> params;
+
+    for (std::string line: lines) {
+
+        if (!isCommentOrEmpty(line)) {
+            params.push_back(
+                    getValue(line)
             );
+        }
+    }
+
+    return parseParameters(params);
 }
 
 std::vector<double> get_alpha(int de_length, int dm_length) {
